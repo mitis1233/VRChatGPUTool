@@ -100,22 +100,22 @@ namespace VRCGPUTool
             }
             catch (FormatException)
             {
-                MessageBox.Show("予期せぬエラーが発生しました。\nアプリケーションを強制終了します。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("發生意外的錯誤。 \n強制終止應用程序。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(-1);
             }
 
             if (!MainObj.gpuStatuses.Any())
             {
-                MessageBox.Show("NVIDIA GPUがシステムで検出されなくなりました。\n対応GPUが認識されているか確認してください");
+                MessageBox.Show("在我的系統中不再檢測到 NVIDIA GPU。 \n請檢查支持的 GPU 是否被識別。");
                 Application.Exit();
             }
 
             GpuStatus g = MainObj.gpuStatuses.ElementAt(MainObj.GpuIndex.SelectedIndex);
-            MainObj.GPUCoreTemp.Text = "GPUコア温度:" + g.CoreTemp.ToString() + "℃";
-            MainObj.GPUTotalPower.Text = "GPU全体電力: " + g.PowerDraw.ToString() + "W";
-            MainObj.GPUCorePLValue.Text = "GPUコア電力制限: " + g.PLimit.ToString() + "W";
-            MainObj.GPUCoreClockValue.Text = "GPUコアクロック: " + g.CoreClock.ToString() + "MHz";
-            MainObj.GPUMemoryClockValue.Text = "GPUメモリクロック: " + g.MemoryClock.ToString() + "MHz";
+            MainObj.GPUCoreTemp.Text =         "GPU核心溫度: " + g.CoreTemp.ToString() + "℃";
+            MainObj.GPUTotalPower.Text =       "GPU總功率: " + g.PowerDraw.ToString() + "W";
+            MainObj.GPUCorePLValue.Text =      "GPU核心功率限制: " + g.PLimit.ToString() + "W";
+            MainObj.GPUCoreClockValue.Text =   "GPU核心頻率: " + g.CoreClock.ToString() + "MHz";
+            MainObj.GPUMemoryClockValue.Text = "VRAM頻率: " + g.MemoryClock.ToString() + "MHz";
 
             DateTime datetime_now = DateTime.Now;
 
@@ -128,7 +128,7 @@ namespace VRCGPUTool
                     MainObj.BeginTime.Value = DateTime.Now.AddMinutes(15);
                 }
                 MainObj.Limit_Action(false, true);
-                MessageBox.Show("外部ツールによって電力制限値が変更されたため制限を終了しました。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("由於外部工具更改了功率限制值，限制已終止。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -136,7 +136,7 @@ namespace VRCGPUTool
         {
             if (!File.Exists(@"C:\Windows\system32\nvidia-smi.exe"))
             {
-                MessageBox.Show("nvidia-smiが見つかりません。\nNVIDIAグラフィックドライバが正しくインストールされていることを確認してください", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("未找到 nvidia-smi。 \n確保 NVIDIA 顯卡驅動安裝正確", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
         }
@@ -176,13 +176,13 @@ namespace VRCGPUTool
             }
             catch (FormatException)
             {
-                MessageBox.Show("このGPUは電力制限に対応していません。\nアプリケーションを終了します。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("此 GPU 不支持功率上限。 \n終止應用程序。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 MainObj.Close();
             }
 
             if (!MainObj.gpuStatuses.Any())
             {
-                MessageBox.Show("NVIDIA GPUがシステムで検出されませんでした。\n対応GPUが搭載されているか確認してください");
+                MessageBox.Show("系統中未檢測到 NVIDIA GPU。 \n請檢查是否安裝了兼容的 GPU。");
                 Application.Exit();
             }
         }

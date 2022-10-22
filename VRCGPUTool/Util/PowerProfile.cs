@@ -41,7 +41,7 @@ namespace VRCGPUTool.Util
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"プロファイル作成時にエラーが発生しました\n\n{ex.Message.ToString()}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"創建配置文件時出錯\n\n{ex.Message.ToString()}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(-1);
             }
         }
@@ -63,7 +63,7 @@ namespace VRCGPUTool.Util
                         }
                         catch (Exception)
                         {
-                            var res = MessageBox.Show("プロファイルに誤りがあります。\nプロファイルを再生成しますか?", "エラー", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                            var res = MessageBox.Show("您的個人資料中有錯誤。 \n是否要重新生成配置文件？", "錯誤", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
                             if (res == DialogResult.Yes)
                             {
                                 try
@@ -72,7 +72,7 @@ namespace VRCGPUTool.Util
                                 }
                                 catch (Exception)
                                 {
-                                    MessageBox.Show("プロファイルを削除できませんでした\nプロファイルを手動で消してください", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    MessageBox.Show("刪除配置文件失敗\n請手動刪除配置文件", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     Environment.Exit(-1);
                                 }
                                 Application.Restart();
@@ -105,7 +105,7 @@ namespace VRCGPUTool.Util
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"プロファイル更新時にエラーが発生しました\n\n{ex.Message.ToString()}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"更新配置文件時出錯\n\n{ex.Message.ToString()}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(-1);
             }
         }

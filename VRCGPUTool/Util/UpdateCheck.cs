@@ -62,7 +62,7 @@ namespace VRCGPUTool.Util
         {
             if (e.Error != null)
             {
-                MessageBox.Show(string.Format("アップデートチェック中にエラーが発生しました。\n\n{0}", e.Error.ToString()));
+                MessageBox.Show(string.Format("檢查更新時出錯。\n\n{0}", e.Error.ToString()));
                 return;
             }
             string tag_name = ((GitHubApiRes)e.Result).tag_name;
@@ -74,7 +74,7 @@ namespace VRCGPUTool.Util
 
             if (tag_name != version)
             {
-                var res = MessageBox.Show("アップデートがあります\n\n最新バージョンは " + tag_name + " です\n\n改定内容:\n" + body + "\n\nアップデートページ(Booth)を開きますか?", "アップデート", MessageBoxButtons.OKCancel);
+                var res = MessageBox.Show("アップデートがあります\n\n最新バージョンは " + tag_name + " です\n\n改定内容:\n" + body + "\n\nアップデートページ(Booth)を開きますか?", "更新", MessageBoxButtons.OKCancel);
                 if (res == DialogResult.OK)
                 {
                     Process.Start(new ProcessStartInfo { FileName = boothUrl, UseShellExecute = true });

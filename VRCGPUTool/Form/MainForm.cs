@@ -61,7 +61,7 @@ namespace VRCGPUTool.Form
             plog.LoadPowerLog(DateTime.Now, false);
 
             SpecificPLValue.Value = Convert.ToDecimal(gpuStatuses.First().PLimit);
-            PowerLimitValue.Value = Convert.ToDecimal(gpuStatuses.First().PLimit);
+            PowerLimitValue.Value = Convert.ToDecimal(125);
             GPUCorePLValue.Text = "GPUコア電力制限: " + gpuStatuses.First().PLimit.ToString() + "W";
 
             if (allowDataProvide)
@@ -139,7 +139,7 @@ namespace VRCGPUTool.Form
         {
             if (datetime_now.Hour == EndTime.Value.Hour && datetime_now.Minute == EndTime.Value.Minute)
             {
-                var res = MessageBox.Show("制限終了時間と現在時刻が同じため制限を開始できません\n終了時間を強制変更することで制限を開始しますか", "情報", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                var res = MessageBox.Show("由於限制結束時間與當前時間相同，無法開始限制\n是否要通過強制更改結束時間來開始限制？", "情報", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
                 if (res == DialogResult.OK)
                 {
                     ignoreTimeCheck = true;
@@ -154,7 +154,7 @@ namespace VRCGPUTool.Form
         {
             if (datetime_now.Hour == BeginTime.Value.Hour && datetime_now.Minute == BeginTime.Value.Minute)
             {
-                var res = MessageBox.Show("制限開始時間と現在時刻が同じため制限を解除できません\n開始時間を強制変更することで制限を解除しますか", "情報", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                var res = MessageBox.Show("由於限制的開始時間與當前時間相同，無法取消限制。\n是否要通過強制更改開始時間來取消限制？", "情報", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
                 if (res == DialogResult.OK)
                 {
                     ignoreTimeCheck = true;
@@ -209,6 +209,7 @@ namespace VRCGPUTool.Form
             }
 
             if (allowDataProvide)
+            if (allowDataProvide)
             {
                 if(limittime % 900 == 10)
                 {
@@ -223,12 +224,12 @@ namespace VRCGPUTool.Form
             GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
             if (PowerLimitValue.Value > g.PLimitMax)
             {
-                MessageBox.Show("電力制限値が設定可能な範囲外です。\n" + g.Name + "の最大電力制限は" + g.PLimitMax + "Wです。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("功率限制超出可配置範圍。\n" + g.Name + "の最大功率限制" + g.PLimitMax + "Wです。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 PowerLimitValue.Value = g.PLimitMax;
             }
             if (PowerLimitValue.Value < g.PLimitMin)
             {
-                MessageBox.Show("電力制限値が設定可能な範囲外です。\n" + g.Name + "の最小電力制限は" + g.PLimitMin + "Wです。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("功率限制超出可配置範圍。\n" + g.Name + "の最小功率限制" + g.PLimitMin + "Wです。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 PowerLimitValue.Value = g.PLimitMin;
             }
         }
@@ -238,12 +239,12 @@ namespace VRCGPUTool.Form
             GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
             if (SpecificPLValue.Value > g.PLimitMax)
             {
-                MessageBox.Show("電力制限値が設定可能な範囲外です。\n" + g.Name + "の最大電力制限は" + g.PLimitMax + "Wです。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("功率限制超出可配置範圍。\n" + g.Name + "の最大功率限制" + g.PLimitMax + "Wです。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SpecificPLValue.Value = g.PLimitMax;
             }
             if (SpecificPLValue.Value < g.PLimitMin)
             {
-                MessageBox.Show("電力制限値が設定可能な範囲外です。\n" + g.Name + "の最小電力制限は" + g.PLimitMin + "Wです。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("功率限制超出可配置範圍。\n" + g.Name + "の最小功率限制" + g.PLimitMin + "Wです。", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SpecificPLValue.Value = g.PLimitMin;
             }
         }
@@ -283,9 +284,7 @@ namespace VRCGPUTool.Form
         {
             if (limitstatus == true)
             {
-                MessageBox.Show("アプリを終了する前に制限を解除してください", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                e.Cancel = true;
-                return;
+                Limit_Action(false, false);
             }
 
             ConfigFile config = new ConfigFile(this);
@@ -299,7 +298,7 @@ namespace VRCGPUTool.Form
         {
             GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
             nvsmi.nvidia_smi("-rgc --id=" + g.UUID);
-            MessageBox.Show("クロック制限をデフォルト値に設定しました", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("將時鐘限制設置為默認值", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void ShowHowToUse(object sender, EventArgs e)
@@ -318,7 +317,7 @@ namespace VRCGPUTool.Form
                         Limit_Action(false, false);
                     }
                     BeginTime.Value = BeginTime.Value.AddMinutes(15);
-                    MessageBox.Show("開始時間と終了時刻は同じ時間に設定できません", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("開始時間和結束時間不能設置為同一時間", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                 {
@@ -373,7 +372,7 @@ namespace VRCGPUTool.Form
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
             string versionInfo = fileVersionInfo.ProductVersion;    
 
-            MessageBox.Show("Version v" + versionInfo + "\n\nCopyright© njm2360 Allrights reserved 2022" ,"バージョン情報");
+            MessageBox.Show("Version v" + versionInfo + "\n\nCopyright© njm2360 Allrights reserved 2022" , "版本信息");
         }
 
         private void ApplicationExitStrip_Click(object sender, EventArgs e)

@@ -61,7 +61,7 @@ namespace VRCGPUTool.Util
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"エラー\n{ex.Message}");
+                MessageBox.Show($"錯誤\n{ex.Message}");
             }
             finally
             {

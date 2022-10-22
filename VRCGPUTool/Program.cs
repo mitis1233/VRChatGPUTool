@@ -28,7 +28,7 @@ namespace VRCGPUTool
             }
             else
             {
-                MessageBox.Show("二重起動を検出しました","エラー",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                MessageBox.Show("檢測到重複啟動", "錯誤", MessageBoxButtons.OK,MessageBoxIcon.Error);
                 mutex.Close();
             }
         }

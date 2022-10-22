@@ -21,90 +21,114 @@ namespace VRCGPUTool.Form
 
         private void InitializeComponent()
         {
-            ComponentResourceManager resources = new ComponentResourceManager(typeof(SettingForm));
-
-
-            this.DataProvideAllow = new CheckBox();
-            this.RegisterStartup = new Button();
-            this.DeleteStartup = new Button();
-            this.GeneralGroup = new GroupBox();
-            this.ConfigFileRecreate = new Button();
-            this.PriceSettingRecreate = new Button();
-            this.UsageLogDelete = new Button();
-            this.DataGroup = new GroupBox();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingForm));
+            this.DataProvideAllow = new System.Windows.Forms.CheckBox();
+            this.RegisterStartup = new System.Windows.Forms.Button();
+            this.DeleteStartup = new System.Windows.Forms.Button();
+            this.GeneralGroup = new System.Windows.Forms.GroupBox();
+            this.ConfigFileRecreate = new System.Windows.Forms.Button();
+            this.PriceSettingRecreate = new System.Windows.Forms.Button();
+            this.UsageLogDelete = new System.Windows.Forms.Button();
+            this.DataGroup = new System.Windows.Forms.GroupBox();
             this.GeneralGroup.SuspendLayout();
             this.DataGroup.SuspendLayout();
             this.SuspendLayout();
-
-
-            this.DataProvideAllow.Location = new Point(25, 20);
-            this.DataProvideAllow.Size = new Size(150, 20);
+            // 
+            // DataProvideAllow
+            // 
+            this.DataProvideAllow.Location = new System.Drawing.Point(25, 18);
+            this.DataProvideAllow.Name = "DataProvideAllow";
+            this.DataProvideAllow.Size = new System.Drawing.Size(150, 18);
             this.DataProvideAllow.TabIndex = 0;
-            this.DataProvideAllow.Text = "使用データ提供";
-            this.DataProvideAllow.CheckedChanged += new EventHandler(this.DataProvideAllow_CheckedChanged);
-
-            this.RegisterStartup.Location = new Point(25, 45);
-            this.RegisterStartup.Size = new Size(150, 20);
+            this.DataProvideAllow.Text = "提供使用數據";
+            this.DataProvideAllow.CheckedChanged += new System.EventHandler(this.DataProvideAllow_CheckedChanged);
+            // 
+            // RegisterStartup
+            // 
+            this.RegisterStartup.Location = new System.Drawing.Point(25, 42);
+            this.RegisterStartup.Name = "RegisterStartup";
+            this.RegisterStartup.Size = new System.Drawing.Size(150, 18);
             this.RegisterStartup.TabIndex = 1;
-            this.RegisterStartup.Text = "スタートアップ登録";
-            this.RegisterStartup.Click += new EventHandler(this.RegisterStartup_Click);
-
-            this.DeleteStartup.Location = new Point(25, 70);
-            this.DeleteStartup.Size = new Size(150, 20);
+            this.RegisterStartup.Text = "開機自動開啟登録";
+            this.RegisterStartup.Click += new System.EventHandler(this.RegisterStartup_Click);
+            // 
+            // DeleteStartup
+            // 
+            this.DeleteStartup.Location = new System.Drawing.Point(25, 65);
+            this.DeleteStartup.Name = "DeleteStartup";
+            this.DeleteStartup.Size = new System.Drawing.Size(150, 18);
             this.DeleteStartup.TabIndex = 2;
-            this.DeleteStartup.Text = "スタートアップ解除";
-            this.DeleteStartup.Click += new EventHandler(this.DeleteStartup_Click);
-
-
+            this.DeleteStartup.Text = "開機自動開啟解除";
+            this.DeleteStartup.Click += new System.EventHandler(this.DeleteStartup_Click);
+            // 
+            // GeneralGroup
+            // 
             this.GeneralGroup.Controls.Add(this.DeleteStartup);
             this.GeneralGroup.Controls.Add(this.RegisterStartup);
             this.GeneralGroup.Controls.Add(this.DataProvideAllow);
-            this.GeneralGroup.Location = new Point(10, 10);
-            this.GeneralGroup.Size = new Size(200, 110);
+            this.GeneralGroup.Location = new System.Drawing.Point(10, 9);
+            this.GeneralGroup.Name = "GeneralGroup";
+            this.GeneralGroup.Size = new System.Drawing.Size(200, 102);
+            this.GeneralGroup.TabIndex = 1;
+            this.GeneralGroup.TabStop = false;
             this.GeneralGroup.Text = "一般";
-
-
-            this.ConfigFileRecreate.Location = new Point(25, 20);
-            this.ConfigFileRecreate.Size = new Size(150, 20);
+            // 
+            // ConfigFileRecreate
+            // 
+            this.ConfigFileRecreate.Location = new System.Drawing.Point(25, 18);
+            this.ConfigFileRecreate.Name = "ConfigFileRecreate";
+            this.ConfigFileRecreate.Size = new System.Drawing.Size(150, 18);
             this.ConfigFileRecreate.TabIndex = 3;
-            this.ConfigFileRecreate.Text = "設定ファイル削除";
-            this.ConfigFileRecreate.Click += new EventHandler(this.ConfigFileRecreate_Click);
-
-            this.PriceSettingRecreate.Location = new Point(25, 45);
-            this.PriceSettingRecreate.Size = new Size(150, 20);
+            this.ConfigFileRecreate.Text = "設置文件削除";
+            this.ConfigFileRecreate.Click += new System.EventHandler(this.ConfigFileRecreate_Click);
+            // 
+            // PriceSettingRecreate
+            // 
+            this.PriceSettingRecreate.Location = new System.Drawing.Point(25, 42);
+            this.PriceSettingRecreate.Name = "PriceSettingRecreate";
+            this.PriceSettingRecreate.Size = new System.Drawing.Size(150, 18);
             this.PriceSettingRecreate.TabIndex = 4;
-            this.PriceSettingRecreate.Text = "電気代設定削除";
-            this.PriceSettingRecreate.Click += new EventHandler(this.PriceSettingRecreate_Click);
-
-            this.UsageLogDelete.Location = new Point(25, 70);
-            this.UsageLogDelete.Size = new Size(150, 20);
+            this.PriceSettingRecreate.Text = "電費設定削除";
+            this.PriceSettingRecreate.Click += new System.EventHandler(this.PriceSettingRecreate_Click);
+            // 
+            // UsageLogDelete
+            // 
+            this.UsageLogDelete.Location = new System.Drawing.Point(25, 65);
+            this.UsageLogDelete.Name = "UsageLogDelete";
+            this.UsageLogDelete.Size = new System.Drawing.Size(150, 18);
             this.UsageLogDelete.TabIndex = 5;
-            this.UsageLogDelete.Text = "電力使用履歴削除";
-            this.UsageLogDelete.Click += new EventHandler(this.UsageLogDelete_Click);
-
+            this.UsageLogDelete.Text = "用電量歷史削除";
+            this.UsageLogDelete.Click += new System.EventHandler(this.UsageLogDelete_Click);
+            // 
+            // DataGroup
+            // 
             this.DataGroup.Controls.Add(this.UsageLogDelete);
             this.DataGroup.Controls.Add(this.PriceSettingRecreate);
             this.DataGroup.Controls.Add(this.ConfigFileRecreate);
-            this.DataGroup.Location = new Point(10, 130);
-            this.DataGroup.Size = new Size(200, 110);
-            this.DataGroup.Text = "データ";
-
-            //Setting Form
-
-            this.AutoScaleDimensions = new SizeF(6F, 13F);
-            this.AutoScaleMode = AutoScaleMode.Font;
-            this.ClientSize = new Size(220, 250);
+            this.DataGroup.Location = new System.Drawing.Point(10, 120);
+            this.DataGroup.Name = "DataGroup";
+            this.DataGroup.Size = new System.Drawing.Size(200, 102);
+            this.DataGroup.TabIndex = 0;
+            this.DataGroup.TabStop = false;
+            this.DataGroup.Text = "數據";
+            // 
+            // SettingForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(220, 231);
             this.Controls.Add(this.DataGroup);
             this.Controls.Add(this.GeneralGroup);
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.Icon = ((Icon)(resources.GetObject("$this.Icon")));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.Name = "SettingForm";
             this.Text = "設定";
             this.GeneralGroup.ResumeLayout(false);
-            this.GeneralGroup.PerformLayout();
             this.DataGroup.ResumeLayout(false);
             this.ResumeLayout(false);
+
         }
 
         private GroupBox GeneralGroup;

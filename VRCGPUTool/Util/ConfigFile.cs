@@ -35,7 +35,7 @@ namespace VRCGPUTool.Util
 
         private void CreateConfigFile()
         {
-            var resmsg = MessageBox.Show("この度は「VRChat向け GPU電力制限ツール」\nをダウンロードしていただきありがとうございます。\n\nリリースノートを開きますか?", "ようこそ", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            var resmsg = MessageBox.Show("感謝您下載“VRChat 的 GPU 功率限制工具”\n。 \n\n你想打開發行說明嗎？", "歡迎", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
             if (resmsg == DialogResult.Yes)
             {
                 Process.Start(new ProcessStartInfo { FileName = "https://github.com/njm2360/VRChatGPUTool#readme", UseShellExecute = true });
@@ -58,16 +58,16 @@ namespace VRCGPUTool.Util
             };
 
             resmsg = MessageBox.Show(
-                "本ツールではユーザビリティの向上や、\n" +
-                "バグ等のシステムレポート用のために \n" +
-                "GPUの使用率や制限の使用状況を取得し、\n" +
-                "開発者に送信することで今後の開発に\n" +
-                "役立てていきたいと考えております。\n\n" +
-                "なお情報に関しては個人を特定しない\n" +
-                "形でのデータ提供となり、情報を第三者\n" +
-                "に提供することはありません。\n\n" +
-                "データ提供に同意しますか？",
-                "【任意】使用データ提供について",
+                "該工具提高了可用性和、\n" +
+                "對於bug等系統報告 \n" +
+                "獲取 GPU 使用情況並限制使用情況、\n" +
+                "通過發送給開發人員以供將來開發\n" +
+                "我們願意幫助您。\n\n" +
+                "信息不能識別個人\n" +
+                "數據將以下列形式提供\n" +
+                "不會提供給\n\n" +
+                "您同意提供數據嗎？",
+                "【可選】提供使用數據",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Information,
                 MessageBoxDefaultButton.Button2
@@ -76,18 +76,18 @@ namespace VRCGPUTool.Util
             if (resmsg == DialogResult.Yes)
             {
                 MessageBox.Show(
-                    "データ提供にご協力いただきありがとうございます。\n" +
-                    "なお、データ提供は設定画面より切り替え可能です。",
-                    "【任意】使用データ提供について",
+                    "感謝您在提供數據方面的合作。\n" +
+                    "可以從設置螢幕切換數據提供。",
+                    "【可選】提供使用數據",
                     MessageBoxButtons.OK
                 );
                 config.AllowDataProvide = true;
             }
             else
             {
-                MessageBox.Show("データ提供に同意しないを選択しました。\n" +
-                    "なお、データ提供は設定画面より切り替え可能です。",
-                    "【任意】使用データ提供について",
+                MessageBox.Show("我已選擇不提供數據。\n" +
+                    "注意、可以從設置屏幕切換數據提供。",
+                    "【可選】提供使用數據",
                     MessageBoxButtons.OK
                 );
             }
@@ -103,8 +103,8 @@ namespace VRCGPUTool.Util
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"設定ファイル作成時にエラーが発生しました\n\n{ex.Message.ToString()}",
-                    "エラー",
+                MessageBox.Show($"創建配置文件時出錯\n\n{ex.Message.ToString()}",
+                    "錯誤",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
@@ -161,9 +161,9 @@ namespace VRCGPUTool.Util
                         catch (Exception)
                         {
                             var res = MessageBox.Show(
-                                "設定ファイルに誤りがあります。\n" +
-                                "設定ファイルを再生成しますか?",
-                                "エラー",
+                                "配置文件中有錯誤。\n" +
+                                "重新生成配置文件？",
+                                "錯誤",
                                 MessageBoxButtons.YesNo,
                                 MessageBoxIcon.Error
                             );
@@ -176,9 +176,9 @@ namespace VRCGPUTool.Util
                                 catch (Exception)
                                 {
                                     MessageBox.Show(
-                                        "設定ファイルを削除できませんでした\n" +
-                                        "設定ファイルを手動で消してください",
-                                        "エラー",
+                                        "刪除配置文件失敗\n" +
+                                        "手動刪除配置文件",
+                                        "錯誤",
                                         MessageBoxButtons.OK,
                                         MessageBoxIcon.Error
                                     );
@@ -230,8 +230,8 @@ namespace VRCGPUTool.Util
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"設定ファイル更新時にエラーが発生しました\n\n{ex.Message.ToString()}",
-                    "エラー",
+                    $"更新配置文件時出錯\n\n{ex.Message.ToString()}",
+                    "錯誤",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );

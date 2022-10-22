@@ -18,7 +18,7 @@ namespace VRCGPUTool.Util
         {
             DateTime dt = DateTime.Now;
 
-            string fName = string.Format("powerlog/powerlog_{0:D4}{1:D2}{2:D2}.json", dt.Year, dt.Month, dt.Day);
+            string fName = string.Format("D:/Program Files (x86)/TEMP/powerlog/powerlog_{0:D4}{1:D2}{2:D2}.json", dt.Year, dt.Month, dt.Day);
 
             try
             {
@@ -33,14 +33,14 @@ namespace VRCGPUTool.Util
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("電力ログファイル作成時にエラーが発生しました\n\n{0}", ex.Message.ToString()), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("創建電源日誌文件時出錯\n\n{0}", ex.Message.ToString()), "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(-1);
             }
         }
 
         internal int LoadPowerLog(DateTime dt, bool isHistoryRead)
         {
-            string fName = string.Format("powerlog/powerlog_{0:D4}{1:D2}{2:D2}.json", dt.Year, dt.Month, dt.Day);
+            string fName = string.Format("D:/Program Files (x86)/TEMP/powerlog/powerlog_{0:D4}{1:D2}{2:D2}.json", dt.Year, dt.Month, dt.Day);
 
             if (File.Exists(fName))
             {
@@ -79,7 +79,7 @@ namespace VRCGPUTool.Util
                 dt = dt.AddDays(-1);
             }
 
-            string fName = string.Format("powerlog/powerlog_{0:D4}{1:D2}{2:D2}.json", dt.Year, dt.Month, dt.Day);
+            string fName = string.Format("D:/Program Files (x86)/TEMP/powerlog/powerlog_{0:D4}{1:D2}{2:D2}.json", dt.Year, dt.Month, dt.Day);
 
             try
             {
@@ -94,7 +94,7 @@ namespace VRCGPUTool.Util
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("電力ログファイル更新時にエラーが発生しました\n\n{0}", ex.Message.ToString()), "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("更新電源日誌文件時出錯\n\n{0}", ex.Message.ToString()), "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(-1);
             }
         }
