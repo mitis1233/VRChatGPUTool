@@ -20,7 +20,7 @@ UI介面大改版
 
 VRC向け GPU電力制限ツール
 
-![image](https://user-images.githubusercontent.com/66125537/180787763-2033c50c-ad34-4ae4-b42a-95374fa401cd.png)
+![image](https://raw.githubusercontent.com/mitis1233/VRChatGPUTool/master/png/main.png)
 
 ## 最新リリース(Ver 2.2.1)
 
