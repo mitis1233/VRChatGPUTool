@@ -371,11 +371,11 @@ namespace VRCGPUTool.Form
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Minimized)
-            {
-                this.Visible = false;
-                notifyIcon.Visible = true;
-            }
+            //if (this.WindowState == FormWindowState.Minimized)
+            //{
+            //    this.Visible = false;
+            //    notifyIcon.Visible = true;
+            //}
         }
 
         private void PercentLabel_Click(object sender, EventArgs e)
