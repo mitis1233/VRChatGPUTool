@@ -4,7 +4,7 @@
 
 用電量Log位置更改: D:\Program Files (x86)\TEMP\powerlog
 
-啟動時默認填入限制功率135W
+啟動時默認填入限制功率150W
 
 新增功率按鈕
 
