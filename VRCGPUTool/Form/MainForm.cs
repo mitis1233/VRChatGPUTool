@@ -15,7 +15,7 @@ namespace VRCGPUTool.Form
         public MainForm()
         {
             InitializeComponent();
-            update = new UpdateCheck();
+
             nvsmi = new NvidiaSmi(this);
             gpuPlog = new GPUPowerLog();
             autoLimit = new AutoLimit(this);
@@ -23,8 +23,7 @@ namespace VRCGPUTool.Form
         }
 
         private NvidiaSmi nvsmi;
-        private UpdateCheck update;
-        private DataProvide dataProvide;
+
         private AutoLimit autoLimit;
         private PowerHistory history;
         internal GPUPowerLog gpuPlog;
@@ -48,10 +47,7 @@ namespace VRCGPUTool.Form
             nvsmi.CheckNvidiaSmi();
             nvsmi.InitGPU();
 
-            if(update.checkUpdateWorker.IsBusy == false)
-            {
-                update.checkUpdateWorker.RunWorkerAsync();
-            }
+
 
             ConfigFile config = new ConfigFile(this);
             config.LoadConfig();
@@ -61,14 +57,9 @@ namespace VRCGPUTool.Form
             plog.LoadPowerLog(DateTime.Now, false);
 
             SpecificPLValue.Value = Convert.ToDecimal(gpuStatuses.First().PLimit);
-            PowerLimitValue.Value = Convert.ToDecimal(125);
+            PowerLimitValue.Value = Convert.ToDecimal(150);
             GPUCorePLValue.Text = "GPUコア電力制限: " + gpuStatuses.First().PLimit.ToString() + "W";
 
-            if (allowDataProvide)
-            {
-                dataProvide = new DataProvide();
-                dataProvide.InitializeRepo(this);
-            }
 
             GPUreadTimer.Enabled = true;
         }
@@ -82,6 +73,7 @@ namespace VRCGPUTool.Form
                 LimitStatusText.Visible = true;
                 PowerLimitValue.Enabled = false;
                 BeginTime.Enabled = false;
+                EndTime.Enabled = false;
                 LoadDefaultLimit.Enabled = false;
                 LoadMaximumLimit.Enabled = false;
                 LoadMinimumLimit.Enabled = false;
@@ -90,6 +82,9 @@ namespace VRCGPUTool.Form
                 CoreClockSetting.Enabled = false;
                 GpuIndex.Enabled = false;
                 SettingButton.Enabled = false;
+                button135.Enabled = false;
+                button150.Enabled = false;
+                button200.Enabled = false;
 
                 if (CoreLimitEnable.Checked == true)
                 {
@@ -105,6 +100,7 @@ namespace VRCGPUTool.Form
                 LimitStatusText.Visible = false;
                 PowerLimitValue.Enabled = true;
                 BeginTime.Enabled = true;
+                EndTime.Enabled = true;
                 LoadDefaultLimit.Enabled = true;
                 LoadMaximumLimit.Enabled = true;
                 LoadMinimumLimit.Enabled = true;
@@ -113,6 +109,9 @@ namespace VRCGPUTool.Form
                 CoreClockSetting.Enabled = true;
                 GpuIndex.Enabled = true;
                 SettingButton.Enabled = true;
+                button135.Enabled = true;
+                button150.Enabled = true;
+                button200.Enabled = true;
 
                 if (CoreLimitEnable.Checked == true)
                 {
@@ -206,16 +205,6 @@ namespace VRCGPUTool.Form
                 AutoDetect.Checked = false;
 
                 Limit_Action(false, false);
-            }
-
-            if (allowDataProvide)
-            if (allowDataProvide)
-            {
-                if(limittime % 900 == 10)
-                {
-                    dataProvide = new DataProvide();
-                    dataProvide.LimitRepo(this);
-                }
             }
         }
 
@@ -387,6 +376,34 @@ namespace VRCGPUTool.Form
                 this.Visible = false;
                 notifyIcon.Visible = true;
             }
+        }
+
+        private void PercentLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void PLwattLabel1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button135_Click(object sender, EventArgs e)
+        {
+            GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
+            PowerLimitValue.Value = Convert.ToDecimal(135);
+        }
+
+        private void button150_Click(object sender, EventArgs e)
+        {
+            GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
+            PowerLimitValue.Value = Convert.ToDecimal(150);
+        }
+
+        private void button200_Click(object sender, EventArgs e)
+        {
+            GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
+            PowerLimitValue.Value = Convert.ToDecimal(200);
         }
     }
 }

@@ -28,8 +28,6 @@ namespace VRCGPUTool.Form
             this.BeginTimeLabel = new System.Windows.Forms.Label();
             this.EndTimeLabel = new System.Windows.Forms.Label();
             this.TimeSetGroupBox = new System.Windows.Forms.GroupBox();
-            this.howtouse = new System.Windows.Forms.Button();
-            this.bugreport = new System.Windows.Forms.Button();
             this.PowerLogShow = new System.Windows.Forms.Button();
             this.SettingButton = new System.Windows.Forms.Button();
             this.GPUCoreTemp = new System.Windows.Forms.Label();
@@ -50,19 +48,19 @@ namespace VRCGPUTool.Form
             this.SpecificPLValue = new System.Windows.Forms.NumericUpDown();
             this.PLwattLabel2 = new System.Windows.Forms.Label();
             this.PLimitGroup = new System.Windows.Forms.GroupBox();
+            this.button150 = new System.Windows.Forms.Button();
+            this.button135 = new System.Windows.Forms.Button();
+            this.LimitStatusText = new System.Windows.Forms.Label();
+            this.ForceUnlimit = new System.Windows.Forms.Button();
+            this.ForceLimit = new System.Windows.Forms.Button();
             this.AutoDetect = new System.Windows.Forms.CheckBox();
-            this.AutoDetectDesc = new System.Windows.Forms.Label();
             this.ThresholdLabel = new System.Windows.Forms.Label();
             this.GPUusageThreshold = new System.Windows.Forms.NumericUpDown();
             this.PercentLabel = new System.Windows.Forms.Label();
             this.CoreLimitEnable = new System.Windows.Forms.CheckBox();
             this.CoreClockSetting = new System.Windows.Forms.NumericUpDown();
             this.FreqLabel = new System.Windows.Forms.Label();
-            this.CoreLimitDesc = new System.Windows.Forms.Label();
             this.BetaGroup = new System.Windows.Forms.GroupBox();
-            this.ForceLimit = new System.Windows.Forms.Button();
-            this.ForceUnlimit = new System.Windows.Forms.Button();
-            this.LimitStatusText = new System.Windows.Forms.Label();
             this.GpuIndex = new System.Windows.Forms.ComboBox();
             this.GPUreadTimer = new System.Windows.Forms.Timer(this.components);
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
@@ -70,6 +68,7 @@ namespace VRCGPUTool.Form
             this.MainWindowOpenStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.ShowVersionInfoStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.ApplicationExitStrip = new System.Windows.Forms.ToolStripMenuItem();
+            this.button200 = new System.Windows.Forms.Button();
             this.TimeSetGroupBox.SuspendLayout();
             this.GPUStatusGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PowerLimitValue)).BeginInit();
@@ -84,79 +83,61 @@ namespace VRCGPUTool.Form
             // BeginTime
             // 
             this.BeginTime.CustomFormat = "H:mm";
-            this.BeginTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Bold);
+            this.BeginTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold);
             this.BeginTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.BeginTime.Location = new System.Drawing.Point(20, 60);
+            this.BeginTime.Location = new System.Drawing.Point(223, 9);
             this.BeginTime.Name = "BeginTime";
             this.BeginTime.ShowUpDown = true;
-            this.BeginTime.Size = new System.Drawing.Size(220, 80);
+            this.BeginTime.Size = new System.Drawing.Size(96, 38);
             this.BeginTime.TabIndex = 0;
             this.BeginTime.ValueChanged += new System.EventHandler(this.SettingTimeChange);
             // 
             // EndTime
             // 
             this.EndTime.CustomFormat = "H:mm";
-            this.EndTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Bold);
+            this.EndTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold);
             this.EndTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.EndTime.Location = new System.Drawing.Point(280, 60);
+            this.EndTime.Location = new System.Drawing.Point(223, 48);
             this.EndTime.Name = "EndTime";
             this.EndTime.ShowUpDown = true;
-            this.EndTime.Size = new System.Drawing.Size(220, 80);
+            this.EndTime.Size = new System.Drawing.Size(96, 38);
             this.EndTime.TabIndex = 1;
             this.EndTime.ValueChanged += new System.EventHandler(this.SettingTimeChange);
             // 
             // BeginTimeLabel
             // 
             this.BeginTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold);
-            this.BeginTimeLabel.Location = new System.Drawing.Point(10, 20);
+            this.BeginTimeLabel.Location = new System.Drawing.Point(6, 15);
             this.BeginTimeLabel.Name = "BeginTimeLabel";
-            this.BeginTimeLabel.Size = new System.Drawing.Size(240, 30);
+            this.BeginTimeLabel.Size = new System.Drawing.Size(210, 30);
             this.BeginTimeLabel.TabIndex = 2;
             this.BeginTimeLabel.Text = "功率限制開始時間";
             // 
             // EndTimeLabel
             // 
             this.EndTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold);
-            this.EndTimeLabel.Location = new System.Drawing.Point(270, 20);
+            this.EndTimeLabel.Location = new System.Drawing.Point(6, 54);
             this.EndTimeLabel.Name = "EndTimeLabel";
-            this.EndTimeLabel.Size = new System.Drawing.Size(240, 30);
+            this.EndTimeLabel.Size = new System.Drawing.Size(211, 30);
             this.EndTimeLabel.TabIndex = 3;
             this.EndTimeLabel.Text = "功率限制結束時間";
             // 
             // TimeSetGroupBox
             // 
-            this.TimeSetGroupBox.Controls.Add(this.BeginTime);
             this.TimeSetGroupBox.Controls.Add(this.EndTime);
             this.TimeSetGroupBox.Controls.Add(this.BeginTimeLabel);
+            this.TimeSetGroupBox.Controls.Add(this.BeginTime);
             this.TimeSetGroupBox.Controls.Add(this.EndTimeLabel);
-            this.TimeSetGroupBox.Location = new System.Drawing.Point(12, 12);
+            this.TimeSetGroupBox.Location = new System.Drawing.Point(10, 2);
             this.TimeSetGroupBox.Name = "TimeSetGroupBox";
-            this.TimeSetGroupBox.Size = new System.Drawing.Size(520, 150);
+            this.TimeSetGroupBox.Size = new System.Drawing.Size(330, 94);
             this.TimeSetGroupBox.TabIndex = 0;
             this.TimeSetGroupBox.TabStop = false;
             this.TimeSetGroupBox.Text = "時刻設定";
             // 
-            // howtouse
-            // 
-            this.howtouse.Location = new System.Drawing.Point(540, 20);
-            this.howtouse.Name = "howtouse";
-            this.howtouse.Size = new System.Drawing.Size(100, 25);
-            this.howtouse.TabIndex = 2;
-            this.howtouse.Text = "教學";
-            this.howtouse.Click += new System.EventHandler(this.ShowHowToUse);
-            // 
-            // bugreport
-            // 
-            this.bugreport.Location = new System.Drawing.Point(540, 60);
-            this.bugreport.Name = "bugreport";
-            this.bugreport.Size = new System.Drawing.Size(100, 25);
-            this.bugreport.TabIndex = 3;
-            this.bugreport.Text = "反饋";
-            this.bugreport.Click += new System.EventHandler(this.Reporter);
-            // 
             // PowerLogShow
             // 
-            this.PowerLogShow.Location = new System.Drawing.Point(540, 100);
+            this.PowerLogShow.Location = new System.Drawing.Point(427, 307);
             this.PowerLogShow.Name = "PowerLogShow";
             this.PowerLogShow.Size = new System.Drawing.Size(100, 25);
             this.PowerLogShow.TabIndex = 4;
@@ -165,7 +146,7 @@ namespace VRCGPUTool.Form
             // 
             // SettingButton
             // 
-            this.SettingButton.Location = new System.Drawing.Point(542, 140);
+            this.SettingButton.Location = new System.Drawing.Point(533, 307);
             this.SettingButton.Name = "SettingButton";
             this.SettingButton.Size = new System.Drawing.Size(100, 25);
             this.SettingButton.TabIndex = 5;
@@ -224,7 +205,7 @@ namespace VRCGPUTool.Form
             this.GPUStatusGroup.Controls.Add(this.GPUCorePLValue);
             this.GPUStatusGroup.Controls.Add(this.GPUTotalPower);
             this.GPUStatusGroup.Controls.Add(this.GPUCoreTemp);
-            this.GPUStatusGroup.Location = new System.Drawing.Point(12, 165);
+            this.GPUStatusGroup.Location = new System.Drawing.Point(10, 94);
             this.GPUStatusGroup.Name = "GPUStatusGroup";
             this.GPUStatusGroup.Size = new System.Drawing.Size(330, 200);
             this.GPUStatusGroup.TabIndex = 6;
@@ -236,14 +217,14 @@ namespace VRCGPUTool.Form
             this.PLimitLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold);
             this.PLimitLabel.Location = new System.Drawing.Point(10, 20);
             this.PLimitLabel.Name = "PLimitLabel";
-            this.PLimitLabel.Size = new System.Drawing.Size(190, 30);
+            this.PLimitLabel.Size = new System.Drawing.Size(172, 30);
             this.PLimitLabel.TabIndex = 0;
             this.PLimitLabel.Text = "功率限制設定";
             // 
             // PowerLimitValue
             // 
             this.PowerLimitValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold);
-            this.PowerLimitValue.Location = new System.Drawing.Point(35, 55);
+            this.PowerLimitValue.Location = new System.Drawing.Point(188, 18);
             this.PowerLimitValue.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -257,16 +238,17 @@ namespace VRCGPUTool.Form
             // 
             // PLwattLabel1
             // 
-            this.PLwattLabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold);
-            this.PLwattLabel1.Location = new System.Drawing.Point(130, 55);
+            this.PLwattLabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold);
+            this.PLwattLabel1.Location = new System.Drawing.Point(282, 28);
             this.PLwattLabel1.Name = "PLwattLabel1";
-            this.PLwattLabel1.Size = new System.Drawing.Size(35, 30);
+            this.PLwattLabel1.Size = new System.Drawing.Size(35, 22);
             this.PLwattLabel1.TabIndex = 13;
             this.PLwattLabel1.Text = "W";
+            this.PLwattLabel1.Click += new System.EventHandler(this.PLwattLabel1_Click);
             // 
             // LoadMinimumLimit
             // 
-            this.LoadMinimumLimit.Location = new System.Drawing.Point(200, 20);
+            this.LoadMinimumLimit.Location = new System.Drawing.Point(15, 101);
             this.LoadMinimumLimit.Name = "LoadMinimumLimit";
             this.LoadMinimumLimit.Size = new System.Drawing.Size(70, 25);
             this.LoadMinimumLimit.TabIndex = 7;
@@ -275,7 +257,7 @@ namespace VRCGPUTool.Form
             // 
             // LoadDefaultLimit
             // 
-            this.LoadDefaultLimit.Location = new System.Drawing.Point(200, 50);
+            this.LoadDefaultLimit.Location = new System.Drawing.Point(15, 130);
             this.LoadDefaultLimit.Name = "LoadDefaultLimit";
             this.LoadDefaultLimit.Size = new System.Drawing.Size(70, 25);
             this.LoadDefaultLimit.TabIndex = 8;
@@ -284,7 +266,7 @@ namespace VRCGPUTool.Form
             // 
             // LoadMaximumLimit
             // 
-            this.LoadMaximumLimit.Location = new System.Drawing.Point(200, 80);
+            this.LoadMaximumLimit.Location = new System.Drawing.Point(15, 161);
             this.LoadMaximumLimit.Name = "LoadMaximumLimit";
             this.LoadMaximumLimit.Size = new System.Drawing.Size(70, 25);
             this.LoadMaximumLimit.TabIndex = 9;
@@ -293,16 +275,16 @@ namespace VRCGPUTool.Form
             // 
             // ResetBehavior
             // 
-            this.ResetBehavior.Location = new System.Drawing.Point(15, 100);
+            this.ResetBehavior.Location = new System.Drawing.Point(12, 60);
             this.ResetBehavior.Name = "ResetBehavior";
-            this.ResetBehavior.Size = new System.Drawing.Size(80, 15);
+            this.ResetBehavior.Size = new System.Drawing.Size(49, 17);
             this.ResetBehavior.TabIndex = 14;
-            this.ResetBehavior.Text = "解除時の挙動";
+            this.ResetBehavior.Text = "解除時";
             // 
             // ResetGPUDefaultPL
             // 
             this.ResetGPUDefaultPL.Checked = true;
-            this.ResetGPUDefaultPL.Location = new System.Drawing.Point(30, 125);
+            this.ResetGPUDefaultPL.Location = new System.Drawing.Point(62, 58);
             this.ResetGPUDefaultPL.Name = "ResetGPUDefaultPL";
             this.ResetGPUDefaultPL.Size = new System.Drawing.Size(140, 20);
             this.ResetGPUDefaultPL.TabIndex = 11;
@@ -311,7 +293,7 @@ namespace VRCGPUTool.Form
             // 
             // SetGPUPLSpecific
             // 
-            this.SetGPUPLSpecific.Location = new System.Drawing.Point(30, 150);
+            this.SetGPUPLSpecific.Location = new System.Drawing.Point(62, 79);
             this.SetGPUPLSpecific.Name = "SetGPUPLSpecific";
             this.SetGPUPLSpecific.Size = new System.Drawing.Size(140, 20);
             this.SetGPUPLSpecific.TabIndex = 10;
@@ -322,7 +304,7 @@ namespace VRCGPUTool.Form
             // 
             this.SpecificPLValue.Enabled = false;
             this.SpecificPLValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.SpecificPLValue.Location = new System.Drawing.Point(175, 150);
+            this.SpecificPLValue.Location = new System.Drawing.Point(188, 78);
             this.SpecificPLValue.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -337,7 +319,7 @@ namespace VRCGPUTool.Form
             // PLwattLabel2
             // 
             this.PLwattLabel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.PLwattLabel2.Location = new System.Drawing.Point(235, 150);
+            this.PLwattLabel2.Location = new System.Drawing.Point(249, 84);
             this.PLwattLabel2.Name = "PLwattLabel2";
             this.PLwattLabel2.Size = new System.Drawing.Size(20, 15);
             this.PLwattLabel2.TabIndex = 15;
@@ -345,6 +327,9 @@ namespace VRCGPUTool.Form
             // 
             // PLimitGroup
             // 
+            this.PLimitGroup.Controls.Add(this.button200);
+            this.PLimitGroup.Controls.Add(this.button150);
+            this.PLimitGroup.Controls.Add(this.button135);
             this.PLimitGroup.Controls.Add(this.PLimitLabel);
             this.PLimitGroup.Controls.Add(this.SpecificPLValue);
             this.PLimitGroup.Controls.Add(this.PLwattLabel1);
@@ -352,16 +337,70 @@ namespace VRCGPUTool.Form
             this.PLimitGroup.Controls.Add(this.LoadDefaultLimit);
             this.PLimitGroup.Controls.Add(this.LoadMaximumLimit);
             this.PLimitGroup.Controls.Add(this.ResetBehavior);
+            this.PLimitGroup.Controls.Add(this.LimitStatusText);
+            this.PLimitGroup.Controls.Add(this.ForceUnlimit);
+            this.PLimitGroup.Controls.Add(this.ForceLimit);
             this.PLimitGroup.Controls.Add(this.ResetGPUDefaultPL);
             this.PLimitGroup.Controls.Add(this.SetGPUPLSpecific);
             this.PLimitGroup.Controls.Add(this.PowerLimitValue);
             this.PLimitGroup.Controls.Add(this.PLwattLabel2);
-            this.PLimitGroup.Location = new System.Drawing.Point(355, 165);
+            this.PLimitGroup.Location = new System.Drawing.Point(346, 2);
             this.PLimitGroup.Name = "PLimitGroup";
-            this.PLimitGroup.Size = new System.Drawing.Size(280, 180);
+            this.PLimitGroup.Size = new System.Drawing.Size(317, 299);
             this.PLimitGroup.TabIndex = 7;
             this.PLimitGroup.TabStop = false;
             this.PLimitGroup.Text = "コア電力制限設定";
+            // 
+            // button150
+            // 
+            this.button150.Location = new System.Drawing.Point(15, 223);
+            this.button150.Name = "button150";
+            this.button150.Size = new System.Drawing.Size(70, 25);
+            this.button150.TabIndex = 21;
+            this.button150.Text = "150";
+            this.button150.Click += new System.EventHandler(this.button150_Click);
+            // 
+            // button135
+            // 
+            this.button135.Location = new System.Drawing.Point(15, 192);
+            this.button135.Name = "button135";
+            this.button135.Size = new System.Drawing.Size(70, 25);
+            this.button135.TabIndex = 20;
+            this.button135.Text = "135";
+            this.button135.Click += new System.EventHandler(this.button135_Click);
+            // 
+            // LimitStatusText
+            // 
+            this.LimitStatusText.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.LimitStatusText.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.LimitStatusText.Font = new System.Drawing.Font("Microsoft Sans Serif", 26F, System.Drawing.FontStyle.Bold);
+            this.LimitStatusText.ForeColor = System.Drawing.Color.Red;
+            this.LimitStatusText.Location = new System.Drawing.Point(166, 240);
+            this.LimitStatusText.Name = "LimitStatusText";
+            this.LimitStatusText.Size = new System.Drawing.Size(127, 41);
+            this.LimitStatusText.TabIndex = 19;
+            this.LimitStatusText.Text = "限制中";
+            this.LimitStatusText.Visible = false;
+            // 
+            // ForceUnlimit
+            // 
+            this.ForceUnlimit.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold);
+            this.ForceUnlimit.Location = new System.Drawing.Point(93, 172);
+            this.ForceUnlimit.Name = "ForceUnlimit";
+            this.ForceUnlimit.Size = new System.Drawing.Size(200, 65);
+            this.ForceUnlimit.TabIndex = 18;
+            this.ForceUnlimit.Text = "解除限制";
+            this.ForceUnlimit.Click += new System.EventHandler(this.ForceUnlimit_Click);
+            // 
+            // ForceLimit
+            // 
+            this.ForceLimit.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold);
+            this.ForceLimit.Location = new System.Drawing.Point(93, 101);
+            this.ForceLimit.Name = "ForceLimit";
+            this.ForceLimit.Size = new System.Drawing.Size(200, 65);
+            this.ForceLimit.TabIndex = 17;
+            this.ForceLimit.Text = "限制功率";
+            this.ForceLimit.Click += new System.EventHandler(this.ForceLimit_Click);
             // 
             // AutoDetect
             // 
@@ -372,27 +411,19 @@ namespace VRCGPUTool.Form
             this.AutoDetect.TabIndex = 13;
             this.AutoDetect.Text = "自動偵測";
             // 
-            // AutoDetectDesc
-            // 
-            this.AutoDetectDesc.Location = new System.Drawing.Point(15, 40);
-            this.AutoDetectDesc.Name = "AutoDetectDesc";
-            this.AutoDetectDesc.Size = new System.Drawing.Size(255, 30);
-            this.AutoDetectDesc.TabIndex = 19;
-            this.AutoDetectDesc.Text = "*自動檢測入睡模式\r\n  僅適用於那些負擔得起 GPU 使用費用的人";
-            // 
             // ThresholdLabel
             // 
             this.ThresholdLabel.Font = new System.Drawing.Font("Gadugi", 9F);
-            this.ThresholdLabel.Location = new System.Drawing.Point(197, 15);
+            this.ThresholdLabel.Location = new System.Drawing.Point(28, 58);
             this.ThresholdLabel.Name = "ThresholdLabel";
-            this.ThresholdLabel.Size = new System.Drawing.Size(50, 15);
+            this.ThresholdLabel.Size = new System.Drawing.Size(43, 19);
             this.ThresholdLabel.TabIndex = 17;
             this.ThresholdLabel.Text = "臨界點";
             // 
             // GPUusageThreshold
             // 
             this.GPUusageThreshold.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.GPUusageThreshold.Location = new System.Drawing.Point(200, 33);
+            this.GPUusageThreshold.Location = new System.Drawing.Point(105, 56);
             this.GPUusageThreshold.Name = "GPUusageThreshold";
             this.GPUusageThreshold.Size = new System.Drawing.Size(40, 21);
             this.GPUusageThreshold.TabIndex = 14;
@@ -406,16 +437,17 @@ namespace VRCGPUTool.Form
             // PercentLabel
             // 
             this.PercentLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.PercentLabel.Location = new System.Drawing.Point(246, 39);
+            this.PercentLabel.Location = new System.Drawing.Point(145, 58);
             this.PercentLabel.Name = "PercentLabel";
             this.PercentLabel.Size = new System.Drawing.Size(20, 15);
             this.PercentLabel.TabIndex = 18;
             this.PercentLabel.Text = "%";
+            this.PercentLabel.Click += new System.EventHandler(this.PercentLabel_Click);
             // 
             // CoreLimitEnable
             // 
             this.CoreLimitEnable.Font = new System.Drawing.Font("Gadugi", 9F);
-            this.CoreLimitEnable.Location = new System.Drawing.Point(10, 70);
+            this.CoreLimitEnable.Location = new System.Drawing.Point(10, 35);
             this.CoreLimitEnable.Name = "CoreLimitEnable";
             this.CoreLimitEnable.Size = new System.Drawing.Size(100, 20);
             this.CoreLimitEnable.TabIndex = 15;
@@ -424,7 +456,7 @@ namespace VRCGPUTool.Form
             // CoreClockSetting
             // 
             this.CoreClockSetting.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.CoreClockSetting.Location = new System.Drawing.Point(35, 90);
+            this.CoreClockSetting.Location = new System.Drawing.Point(105, 34);
             this.CoreClockSetting.Maximum = new decimal(new int[] {
             2000,
             0,
@@ -448,77 +480,34 @@ namespace VRCGPUTool.Form
             // FreqLabel
             // 
             this.FreqLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.FreqLabel.Location = new System.Drawing.Point(100, 90);
+            this.FreqLabel.Location = new System.Drawing.Point(171, 36);
             this.FreqLabel.Name = "FreqLabel";
-            this.FreqLabel.Size = new System.Drawing.Size(40, 15);
+            this.FreqLabel.Size = new System.Drawing.Size(37, 19);
             this.FreqLabel.TabIndex = 1;
             this.FreqLabel.Text = "MHz";
             // 
-            // CoreLimitDesc
-            // 
-            this.CoreLimitDesc.Location = new System.Drawing.Point(140, 75);
-            this.CoreLimitDesc.Name = "CoreLimitDesc";
-            this.CoreLimitDesc.Size = new System.Drawing.Size(115, 30);
-            this.CoreLimitDesc.TabIndex = 0;
-            this.CoreLimitDesc.Text = "* 注意頻率勿過低";
-            // 
             // BetaGroup
             // 
-            this.BetaGroup.Controls.Add(this.CoreLimitDesc);
             this.BetaGroup.Controls.Add(this.FreqLabel);
             this.BetaGroup.Controls.Add(this.CoreClockSetting);
             this.BetaGroup.Controls.Add(this.CoreLimitEnable);
             this.BetaGroup.Controls.Add(this.ThresholdLabel);
             this.BetaGroup.Controls.Add(this.PercentLabel);
             this.BetaGroup.Controls.Add(this.GPUusageThreshold);
-            this.BetaGroup.Controls.Add(this.AutoDetectDesc);
             this.BetaGroup.Controls.Add(this.AutoDetect);
-            this.BetaGroup.Location = new System.Drawing.Point(355, 347);
+            this.BetaGroup.Location = new System.Drawing.Point(10, 297);
             this.BetaGroup.Name = "BetaGroup";
-            this.BetaGroup.Size = new System.Drawing.Size(284, 119);
+            this.BetaGroup.Size = new System.Drawing.Size(216, 82);
             this.BetaGroup.TabIndex = 8;
             this.BetaGroup.TabStop = false;
             this.BetaGroup.Text = "測試版功能";
-            // 
-            // ForceLimit
-            // 
-            this.ForceLimit.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold);
-            this.ForceLimit.Location = new System.Drawing.Point(10, 380);
-            this.ForceLimit.Name = "ForceLimit";
-            this.ForceLimit.Size = new System.Drawing.Size(200, 45);
-            this.ForceLimit.TabIndex = 17;
-            this.ForceLimit.Text = "限制功率";
-            this.ForceLimit.Click += new System.EventHandler(this.ForceLimit_Click);
-            // 
-            // ForceUnlimit
-            // 
-            this.ForceUnlimit.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold);
-            this.ForceUnlimit.Location = new System.Drawing.Point(10, 430);
-            this.ForceUnlimit.Name = "ForceUnlimit";
-            this.ForceUnlimit.Size = new System.Drawing.Size(200, 45);
-            this.ForceUnlimit.TabIndex = 18;
-            this.ForceUnlimit.Text = "解除限制";
-            this.ForceUnlimit.Click += new System.EventHandler(this.ForceUnlimit_Click);
-            // 
-            // LimitStatusText
-            // 
-            this.LimitStatusText.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.LimitStatusText.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.LimitStatusText.Font = new System.Drawing.Font("Microsoft Sans Serif", 26F, System.Drawing.FontStyle.Bold);
-            this.LimitStatusText.ForeColor = System.Drawing.Color.Red;
-            this.LimitStatusText.Location = new System.Drawing.Point(222, 409);
-            this.LimitStatusText.Name = "LimitStatusText";
-            this.LimitStatusText.Size = new System.Drawing.Size(127, 41);
-            this.LimitStatusText.TabIndex = 19;
-            this.LimitStatusText.Text = "限制中";
-            this.LimitStatusText.Visible = false;
             // 
             // GpuIndex
             // 
             this.GpuIndex.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.GpuIndex.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold);
             this.GpuIndex.FormattingEnabled = true;
-            this.GpuIndex.Location = new System.Drawing.Point(360, 470);
+            this.GpuIndex.Location = new System.Drawing.Point(353, 346);
             this.GpuIndex.Name = "GpuIndex";
             this.GpuIndex.Size = new System.Drawing.Size(280, 28);
             this.GpuIndex.TabIndex = 19;
@@ -567,22 +556,26 @@ namespace VRCGPUTool.Form
             this.ApplicationExitStrip.Text = "終了";
             this.ApplicationExitStrip.Click += new System.EventHandler(this.ApplicationExitStrip_Click);
             // 
+            // button200
+            // 
+            this.button200.Location = new System.Drawing.Point(15, 254);
+            this.button200.Name = "button200";
+            this.button200.Size = new System.Drawing.Size(70, 25);
+            this.button200.TabIndex = 22;
+            this.button200.Text = "200";
+            this.button200.Click += new System.EventHandler(this.button200_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(660, 500);
+            this.ClientSize = new System.Drawing.Size(655, 377);
             this.Controls.Add(this.TimeSetGroupBox);
-            this.Controls.Add(this.howtouse);
-            this.Controls.Add(this.bugreport);
             this.Controls.Add(this.PowerLogShow);
             this.Controls.Add(this.SettingButton);
             this.Controls.Add(this.GPUStatusGroup);
             this.Controls.Add(this.PLimitGroup);
             this.Controls.Add(this.BetaGroup);
-            this.Controls.Add(this.ForceLimit);
-            this.Controls.Add(this.ForceUnlimit);
-            this.Controls.Add(this.LimitStatusText);
             this.Controls.Add(this.GpuIndex);
             this.Font = new System.Drawing.Font("Gadugi", 8F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -614,7 +607,6 @@ namespace VRCGPUTool.Form
         private Timer GPUreadTimer;
         private Button LoadDefaultLimit;
         private CheckBox AutoDetect;
-        private Label AutoDetectDesc;
         private Label LimitStatusText;
         private Label PercentLabel;
         private Label ThresholdLabel;
@@ -628,9 +620,6 @@ namespace VRCGPUTool.Form
         private CheckBox CoreLimitEnable;
         private GroupBox PLimitGroup;
         private Label FreqLabel;
-        private Button howtouse;
-        private Button bugreport;
-        private Label CoreLimitDesc;
         internal ComboBox GpuIndex;
         internal Label GPUCoreTemp;
         internal Label GPUTotalPower;
@@ -653,6 +642,9 @@ namespace VRCGPUTool.Form
         private ToolStripMenuItem MainWindowOpenStrip;
         private ToolStripMenuItem ShowVersionInfoStrip;
         private ToolStripMenuItem ApplicationExitStrip;
+        private Button button135;
+        private Button button150;
+        private Button button200;
     }
 }
 
