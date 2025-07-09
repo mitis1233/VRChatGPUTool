@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -74,48 +74,22 @@ namespace VRCGPUTool
         {
             try
             {
-                MainObj.gpuStatuses.Clear();
-                using (var r = new StringReader(e.Result.ToString()))
-                {
-                    for (string l = r.ReadLine(); l != null; l = r.ReadLine())
-                    {
-                        string[] v = l.Split(',');
-                        if (v.Length != queryColumns.Length) continue;
-
-                        MainObj.gpuStatuses.Add(new GpuStatus(
-                            v[0].Trim(),
-                            v[1].Trim(),
-                            (int)double.Parse(v[2]),
-                            (int)double.Parse(v[3]),
-                            (int)double.Parse(v[4]),
-                            (int)double.Parse(v[5]),
-                            (int)double.Parse(v[6]),
-                            (int)double.Parse(v[7]),
-                            (int)double.Parse(v[8]),
-                            (int)double.Parse(v[9]),
-                            (int)double.Parse(v[10])
-                        ));
-                    }
-                }
+                ParseGpuData(e.Result.ToString());
             }
             catch (FormatException)
             {
-                MessageBox.Show("發生意外的錯誤。 \n強制終止應用程序。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("發生意外的錯誤。 \n強制終止應用程式。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(-1);
             }
 
             if (!MainObj.gpuStatuses.Any())
             {
-                MessageBox.Show("在我的系統中不再檢測到 NVIDIA GPU。 \n請檢查支持的 GPU 是否被識別。");
+                MessageBox.Show("在我的系統中不再檢測到 NVIDIA GPU。 \n請檢查支持的 GPU 是否被識別。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
 
             GpuStatus g = MainObj.gpuStatuses.ElementAt(MainObj.GpuIndex.SelectedIndex);
-            MainObj.GPUCoreTemp.Text =         "GPU核心溫度: " + g.CoreTemp.ToString() + "℃";
-            MainObj.GPUTotalPower.Text =       "GPU總功率: " + g.PowerDraw.ToString() + "W";
-            MainObj.GPUCorePLValue.Text =      "GPU核心功率限制: " + g.PLimit.ToString() + "W";
-            MainObj.GPUCoreClockValue.Text =   "GPU核心頻率: " + g.CoreClock.ToString() + "MHz";
-            MainObj.GPUMemoryClockValue.Text = "VRAM頻率: " + g.MemoryClock.ToString() + "MHz";
+            MainObj.UpdateGpuInfoUI(g);
 
             DateTime datetime_now = DateTime.Now;
 
@@ -147,28 +121,7 @@ namespace VRCGPUTool
             string res = nvidia_smi(string.Format("--query-gpu={0} --format=csv,noheader,nounits", query));
             try
             {
-                using (var r = new StringReader(res))
-                {
-                    for (string l = r.ReadLine(); l != null; l = r.ReadLine())
-                    {
-                        string[] v = l.Split(',');
-                        if (v.Length != queryColumns.Length) continue;
-
-                        MainObj.gpuStatuses.Add(new GpuStatus(
-                            v[0].Trim(),
-                            v[1].Trim(),
-                            (int)double.Parse(v[2]),
-                            (int)double.Parse(v[3]),
-                            (int)double.Parse(v[4]),
-                            (int)double.Parse(v[5]),
-                            (int)double.Parse(v[6]),
-                            (int)double.Parse(v[7]),
-                            (int)double.Parse(v[8]),
-                            (int)double.Parse(v[9]),
-                            (int)double.Parse(v[10])
-                        ));
-                    }
-                }
+                ParseGpuData(res);
                 foreach (GpuStatus g in MainObj.gpuStatuses)
                 {
                     MainObj.GpuIndex.Items.Add(g.Name);
@@ -176,14 +129,41 @@ namespace VRCGPUTool
             }
             catch (FormatException)
             {
-                MessageBox.Show("此 GPU 不支持功率上限。 \n終止應用程序。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("此 GPU 不支持功率上限。 \n終止應用程式。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 MainObj.Close();
             }
 
             if (!MainObj.gpuStatuses.Any())
             {
-                MessageBox.Show("系統中未檢測到 NVIDIA GPU。 \n請檢查是否安裝了兼容的 GPU。");
+                MessageBox.Show("系統中未檢測到 NVIDIA GPU。 \n請檢查是否安裝了兼容的 GPU。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
+            }
+        }
+        
+        private void ParseGpuData(string data)
+        {
+            MainObj.gpuStatuses.Clear();
+            using (var r = new StringReader(data))
+            {
+                for (string l = r.ReadLine(); l != null; l = r.ReadLine())
+                {
+                    string[] v = l.Split(',');
+                    if (v.Length != queryColumns.Length) continue;
+
+                    MainObj.gpuStatuses.Add(new GpuStatus(
+                        v[0].Trim(),
+                        v[1].Trim(),
+                        (int)Math.Round(decimal.Parse(v[2])),
+                        (int)Math.Round(decimal.Parse(v[3])),
+                        (int)Math.Round(decimal.Parse(v[4])),
+                        (int)Math.Round(decimal.Parse(v[5])),
+                        (int)Math.Round(decimal.Parse(v[6])),
+                        (int)Math.Round(decimal.Parse(v[7])),
+                        (int)Math.Round(decimal.Parse(v[8])),
+                        (int)Math.Round(decimal.Parse(v[9])),
+                        (int)Math.Round(decimal.Parse(v[10]))
+                    ));
+                }
             }
         }
     }
