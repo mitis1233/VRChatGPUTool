@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows.Forms;
-using TaskScheduler;
+using Microsoft.Win32.TaskScheduler;
 
 namespace VRCGPUTool.Util
 {
@@ -13,96 +13,49 @@ namespace VRCGPUTool.Util
 
         public void registerTask()
         {
-            ITaskService taskservice = null;
-            ITaskFolder taskfolder = null;
-
             try
             {
-                taskservice = new TaskScheduler.TaskScheduler();
-                taskservice.Connect();
-                taskfolder = taskservice.GetFolder("\\");
-                var path = "\\" + TASK_NAME;
+                using (TaskService ts = new TaskService())
+                {
+                    TaskDefinition td = ts.NewTask();
+                    td.RegistrationInfo.Author = AUTHOR;
+                    td.RegistrationInfo.Description = DESCRIPTION;
 
-                ITaskDefinition taskDefinition = taskservice.NewTask(0);
-                IRegistrationInfo registrationInfo = taskDefinition.RegistrationInfo;
-                IActionCollection actionCollection = taskDefinition.Actions;
-                IExecAction execAction = (IExecAction)actionCollection.Create(_TASK_ACTION_TYPE.TASK_ACTION_EXEC);
-                ITriggerCollection triggerCollection = taskDefinition.Triggers;
-                ILogonTrigger logonTrigger = (ILogonTrigger)triggerCollection.Create(_TASK_TRIGGER_TYPE2.TASK_TRIGGER_LOGON);
-                ITaskSettings taskSettings = taskDefinition.Settings;
-                IPrincipal principal = taskDefinition.Principal;
+                    td.Principal.UserId = $@"{Environment.UserDomainName}\{Environment.UserName}";
+                    td.Principal.LogonType = TaskLogonType.InteractiveToken;
+                    td.Principal.RunLevel = TaskRunLevel.Highest;
 
-                taskSettings.ExecutionTimeLimit = "PT0S";
-                taskSettings.DisallowStartIfOnBatteries = true;
-                taskSettings.Priority = 7;
+                    LogonTrigger lt = new LogonTrigger();
+                    lt.UserId = $@"{Environment.UserDomainName}\{Environment.UserName}";
+                    td.Triggers.Add(lt);
 
-                logonTrigger.Enabled = true;
-                logonTrigger.UserId = $@"{Environment.UserDomainName}\{Environment.UserName}";
+                    td.Settings.ExecutionTimeLimit = TimeSpan.Zero;
+                    td.Settings.DisallowStartIfOnBatteries = true;
+                    td.Settings.Priority = System.Diagnostics.ProcessPriorityClass.BelowNormal;
 
-                registrationInfo.Author = AUTHOR;
-                registrationInfo.Description = DESCRIPTION;
+                    td.Actions.Add(new ExecAction(Application.ExecutablePath, null, Path.GetDirectoryName(Application.ExecutablePath)));
 
-                principal.UserId = $@"{Environment.UserDomainName}\{Environment.UserName}";
-                principal.LogonType = _TASK_LOGON_TYPE.TASK_LOGON_INTERACTIVE_TOKEN;
-                principal.RunLevel = _TASK_RUNLEVEL.TASK_RUNLEVEL_HIGHEST;
-
-                execAction.Path = Application.ExecutablePath;
-                execAction.WorkingDirectory = Path.GetDirectoryName(Application.ExecutablePath);
-
-                taskfolder.RegisterTaskDefinition(
-                    path,
-                    taskDefinition,
-                    (int)_TASK_CREATION.TASK_CREATE_OR_UPDATE,
-                    null,
-                    null,
-                    _TASK_LOGON_TYPE.TASK_LOGON_NONE,
-                    null
-                );
+                    ts.RootFolder.RegisterTaskDefinition(TASK_NAME, td, TaskCreation.CreateOrUpdate, null, null, TaskLogonType.None);
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"錯誤\n{ex.Message}");
             }
-            finally
-            {
-                if (taskservice != null)
-                {
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(taskservice);
-                }
-                if (taskfolder != null)
-                {
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(taskfolder);
-                }
-            }
         }
 
         public void removeTask()
         {
-            ITaskService taskservice = null;
-            ITaskFolder taskfolder = null;
-
             try
             {
-                taskservice = new TaskScheduler.TaskScheduler();
-                taskservice.Connect();
-                taskfolder = taskservice.GetFolder("\\");
-
-                taskfolder.DeleteTask(TASK_NAME, 0);
+                using (TaskService ts = new TaskService())
+                {
+                    ts.RootFolder.DeleteTask(TASK_NAME);
+                }
             }
             catch
             {
                 //未登録
-            }
-            finally
-            {
-                if (taskservice != null)
-                {
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(taskservice);
-                }
-                if (taskfolder != null)
-                {
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(taskfolder);
-                }
             }
         }
     }

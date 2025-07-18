@@ -35,6 +35,7 @@ namespace VRCGPUTool.Form
         private bool ignoreTimeCheck = false;
         internal int limittime = 0;
         private DateTime datetime_now = DateTime.Now;
+        private int uiUpdateCounter = 0;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -62,7 +63,7 @@ namespace VRCGPUTool.Form
             GPUCorePLValue.Text = "GPU限制:        " + firstGpu.PLimit.ToString() + "W";
 
 
-            GPUreadTimer.Interval = 1000;
+            GPUreadTimer.Interval = 800;
             GPUreadTimer.Enabled = true;
 
             BeginTime.Enabled = limitime.Checked;
@@ -93,11 +94,11 @@ namespace VRCGPUTool.Form
 
                 if (CoreLimitEnable.Checked == true)
                 {
-                    nvsmi.nvidia_smi("-lgc 210," + CoreClockSetting.Value + "--id=" + g.UUID);
+                    nvsmi.nvidia_smi($"-lgc 210,{CoreClockSetting.Value}--id={g.UUID}");
                 }
 
-                nvsmi.nvidia_smi("-pl " + PowerLimitValue.Value.ToString() + " --id=" + g.UUID);
-                GPUCorePLValue.Text = "GPU限制:        " + PowerLimitValue.Value.ToString() + "W";
+                nvsmi.nvidia_smi($"-pl {PowerLimitValue.Value} --id={g.UUID}");
+                GPUCorePLValue.Text = $"GPU限制:        {PowerLimitValue.Value}W";
             }
             else
             {
@@ -120,20 +121,20 @@ namespace VRCGPUTool.Form
 
                 if (CoreLimitEnable.Checked == true)
                 {
-                    nvsmi.nvidia_smi("-rgc --id=" + g.UUID);
+                    nvsmi.nvidia_smi($"-rgc --id={g.UUID}");
                 }
 
                 if (expection == false)
                 {
                     if (ResetGPUDefaultPL.Checked == true)
                     {
-                        nvsmi.nvidia_smi("-pl " + g.PLimitDefault.ToString() + " --id=" + g.UUID);
-                        GPUCorePLValue.Text = "GPU限制:        " + g.PLimitDefault.ToString() + "W";
+                        nvsmi.nvidia_smi($"-pl {g.PLimitDefault} --id={g.UUID}");
+                        GPUCorePLValue.Text = $"GPU限制:        {g.PLimitDefault}W";
                     }
                     else
                     {
-                        nvsmi.nvidia_smi("-pl " + SpecificPLValue.Value.ToString() + " --id=" + g.UUID);
-                        GPUCorePLValue.Text = "GPU限制:        " + SpecificPLValue.Value.ToString() + "W";
+                        nvsmi.nvidia_smi($"-pl {SpecificPLValue.Value} --id={g.UUID}");
+                        GPUCorePLValue.Text = $"GPU限制:        {SpecificPLValue.Value}W";
                     }
                 }
             }
@@ -151,7 +152,10 @@ namespace VRCGPUTool.Form
                     Limit_Action(true, false);
                 }
             }
-            Limit_Action(true, false);
+            else
+            {
+                Limit_Action(true, false);
+            }
         }
 
         private void ForceUnlimit_Click(object sender, EventArgs e)
@@ -166,7 +170,10 @@ namespace VRCGPUTool.Form
                     Limit_Action(false, false);
                 }
             }
-            Limit_Action(false, false);
+            else
+            {
+                Limit_Action(false, false);
+            }
         }
 
         private void SelectGPUChanged(object sender, EventArgs e)
@@ -178,18 +185,46 @@ namespace VRCGPUTool.Form
 
         private void GPUreadTimer_Tick(object sender, EventArgs e)
         {
-            // Prevent unnecessary updates if form is minimized or not visible
-            if (!this.Visible || this.WindowState == FormWindowState.Minimized)
+            if (this.Visible == false || this.WindowState == FormWindowState.Minimized)
             {
                 return;
             }
 
-            if(nvsmi.NvsmiWorker.IsBusy == false)
-            {
-                nvsmi.NvsmiWorker.RunWorkerAsync();
-            }
-            // Even if worker is busy, we don't want UI to appear frozen
+            uiUpdateCounter++;
 
+            if (uiUpdateCounter % 2 == 0) // Executes every 2 seconds
+            {
+                if (nvsmi.NvsmiWorker.IsBusy == false)
+                {
+                    nvsmi.NvsmiWorker.RunWorkerAsync();
+                }
+
+                if (AutoDetect.Checked == true && limitstatus == true)
+                {
+                    try
+                    {
+                        if (autoLimit.CheckAutoLimit(gpuStatuses.ElementAt(GpuIndex.SelectedIndex)))
+                        {
+                            Limit_Action(true, false);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"自動限制檢查時發生錯誤: {ex.Message}", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+
+                datetime_now = DateTime.Now;
+                if (datetime_now.Hour == BeginTime.Value.Hour && datetime_now.Minute == BeginTime.Value.Minute && !limitstatus && limitime.Checked)
+                {
+                    Limit_Action(true, false);
+                }
+                if (datetime_now.Hour == EndTime.Value.Hour && datetime_now.Minute == EndTime.Value.Minute && limitstatus && limitime.Checked)
+                {
+                    AutoDetect.Checked = false;
+                    Limit_Action(false, false);
+                }
+            }
 
             if (limitstatus)
             {
@@ -198,33 +233,6 @@ namespace VRCGPUTool.Form
             else
             {
                 limittime = 0;
-            }
-
-            if (AutoDetect.Checked == true && limitstatus == true)
-            {
-                try
-                {
-                    if (autoLimit.CheckAutoLimit(gpuStatuses.ElementAt(GpuIndex.SelectedIndex)))
-                    {
-                        Limit_Action(true, false);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"自動限制檢查時發生錯誤: {ex.Message}", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-
-            datetime_now = DateTime.Now;
-            if (datetime_now.Hour == BeginTime.Value.Hour && datetime_now.Minute == BeginTime.Value.Minute && !limitstatus && limitime.Checked)
-            {
-                Limit_Action(true, false);
-            }
-            if (datetime_now.Hour == EndTime.Value.Hour && datetime_now.Minute == EndTime.Value.Minute && limitstatus && limitime.Checked)
-            {
-                AutoDetect.Checked = false;
-
-                Limit_Action(false, false);
             }
         }
 
@@ -415,7 +423,7 @@ namespace VRCGPUTool.Form
 
         internal void UpdateGpuInfoUI(GpuStatus g)
         {
-            GPUCoreTemp.Text = $"GPU核心溫度: {g.CoreTemp}°C";
+            GPUCoreTemp.Text = $"GPU核心:        {g.CoreTemp}°C";
             GPUTotalPower.Text = $"GPU功耗:        {g.PowerDraw}W";
             GPUCorePLValue.Text = $"GPU限制:        {g.PLimit}W";
             GPUCoreClockValue.Text = $"GPU頻率:        {g.CoreClock}MHz";
