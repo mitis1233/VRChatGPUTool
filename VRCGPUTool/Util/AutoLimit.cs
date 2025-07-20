@@ -5,13 +5,13 @@ namespace VRCGPUTool.Util
 {
     internal class AutoLimit
     {
-        private int[] recentutil = new int[300];
+        private readonly int[] recentutil = new int[300];
         private int writeaddr = 0;
         private bool data_ready = false;
 
         private const int AVE_DELTA = 20;
 
-        MainForm MainObj;
+        readonly MainForm MainObj;
 
         public AutoLimit(MainForm Main_Obj)
         {

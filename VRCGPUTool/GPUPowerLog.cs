@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Threading.Tasks;
 using VRCGPUTool.Form;
 using VRCGPUTool.Util;
 
@@ -15,34 +16,38 @@ namespace VRCGPUTool
 
         internal class RawData
         {
-            public int[] hourPowerLog { get; set; } = new int[24];
-            public DateTime logdate { get; set; } = DateTime.Now;
+            public int[] HourPowerLog { get; set; } = new int[24];
+            public DateTime Logdate { get; set; } = DateTime.Now;
         }
 
         internal void ClearPowerLog()
         {
-            foreach(int i in rawdata.hourPowerLog)
+            foreach(int i in rawdata.HourPowerLog)
             {
-                rawdata.hourPowerLog[i] = 0;
+                rawdata.HourPowerLog[i] = 0;
             }
         }
 
-        internal void PowerLogging(DateTime dt, GpuStatus g,GPUPowerLog gpuPlogCopy,MainForm fm)
+        internal async Task PowerLoggingAsync(DateTime now, GpuStatus g)
         {
-            if (gpuPlogCopy.rawdata.logdate.Day != dt.Day)
+            if (now.Hour != rawdata.Logdate.Hour)
             {
-                PowerLogFile plog = new PowerLogFile(gpuPlogCopy);
-                plog.SavePowerLog(true);
-                fm.gpuPlog = new GPUPowerLog();
-                fm.gpuPlog.AddPowerDeltaData(dt.Hour, g.PowerDraw);
+                rawdata.Logdate = now;
+                for (int i = 0; i < 24; i++)
+                {
+                    rawdata.HourPowerLog[i] = 0;
+                }
             }
 
-            gpuPlogCopy.AddPowerDeltaData(dt.Hour, g.PowerDraw);
+            rawdata.HourPowerLog[now.Hour] += g.PowerDraw;
+
+            PowerLogFile logfile = new(this);
+            await logfile.SavePowerLogAsync();
         }
 
         private void AddPowerDeltaData(int hour,int value)
         {
-            rawdata.hourPowerLog[hour] += value;
+            rawdata.HourPowerLog[hour] += value;
         }
     }
 }

@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using VRCGPUTool.Util;
 
@@ -14,11 +15,11 @@ namespace VRCGPUTool.Form
         {
             InitializeComponent();
             this.fm = fm;
-            DataProvideAllow.Checked = fm.allowDataProvide;
+
             startupTask = new StartupTask();
         }
 
-        private void ConfigFileRecreate_Click(object sender, EventArgs e)
+        private async void ConfigFileRecreate_Click(object sender, EventArgs e)
         {
             var res = MessageBox.Show(
                 "設定ファイルを削除してよろしいですか\n" +
@@ -30,12 +31,12 @@ namespace VRCGPUTool.Form
             );
             if(res == DialogResult.Yes)
             {
-                File.Delete("config.json");
+                await Task.Run(() => File.Delete("config.json"));
                 Environment.Exit(0);
             }
         }
 
-        private void PriceSettingRecreate_Click(object sender, EventArgs e)
+        private async void PriceSettingRecreate_Click(object sender, EventArgs e)
         {
             var res = MessageBox.Show(
                 "電気代設定ファイルを削除してよろしいですか\n" +
@@ -47,12 +48,12 @@ namespace VRCGPUTool.Form
             );
             if (res == DialogResult.Yes)
             {
-                File.Delete("profile.json");
+                await Task.Run(() => File.Delete("profile.json"));
                 Environment.Exit(0);
             }
         }
 
-        private void UsageLogDelete_Click(object sender, EventArgs e)
+        private async void UsageLogDelete_Click(object sender, EventArgs e)
         {
             var res = MessageBox.Show(
                 "電力使用履歴ファイルを削除してよろしいですか\n" +
@@ -64,33 +65,27 @@ namespace VRCGPUTool.Form
             );
             if (res == DialogResult.Yes)
             {
-                DirectoryInfo di = new DirectoryInfo("powerlog");
-                di.Delete(true);
-                Directory.CreateDirectory("powerlog");
+                await Task.Run(() => 
+                {
+                    if (Directory.Exists(PathUtil.LogDirectory))
+                    {
+                        Directory.Delete(PathUtil.LogDirectory, true);
+                    }
+                    Directory.CreateDirectory(PathUtil.LogDirectory);
+                });
                 Environment.Exit(0);
             }
         }
 
-        private void DataProvideAllow_CheckedChanged(object sender, EventArgs e)
-        {
-            if(DataProvideAllow.Checked == true)
-            {
-                fm.allowDataProvide = true;
-            }
-            else
-            {
-                fm.allowDataProvide= false;
-            }
-        }
 
         private void RegisterStartup_Click(object sender, EventArgs e)
         {
-            startupTask.registerTask();
+            StartupTask.RegisterTask();
         }
 
         private void DeleteStartup_Click(object sender, EventArgs e)
         {
-            startupTask.removeTask();
+            StartupTask.RemoveTask();
         }
     }
 }

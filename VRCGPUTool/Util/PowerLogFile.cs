@@ -1,66 +1,70 @@
-﻿using System;
+#nullable enable
+
+using System;
 using System.Text.Json;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace VRCGPUTool.Util
 {
     internal class PowerLogFile
     {
+        private readonly GPUPowerLog gpupowerlog;
+        private static readonly JsonSerializerOptions s_jsonOptions = new() { WriteIndented = true };
+
         public PowerLogFile(GPUPowerLog glog)
         {
             gpupowerlog = glog;
+            Directory.CreateDirectory(PathUtil.LogDirectory);
         }
 
-        GPUPowerLog gpupowerlog;
+        private static string GetLogFilePath(DateTime dt)
+        {
+            return Path.Combine(PathUtil.LogDirectory, $"powerlog_{dt:yyyyMMdd}.json");
+        }
 
-        internal void CreatePowerLogFile()
+        internal static async Task CreatePowerLogFileAsync()
         {
             DateTime dt = DateTime.Now;
-
-            string fName = string.Format("D:/Program Files (x86)/TEMP/powerlog/powerlog_{0:D4}{1:D2}{2:D2}.json", dt.Year, dt.Month, dt.Day);
+            string fName = GetLogFilePath(dt);
 
             try
             {
-                GPUPowerLog plog = new GPUPowerLog();
-
-                string logjson = JsonSerializer.Serialize(plog);
-
-                using (StreamWriter sw = new StreamWriter(fName))
-                {
-                    sw.WriteLine(logjson);
-                }
+                GPUPowerLog plog = new();
+                string logjson = JsonSerializer.Serialize(plog, s_jsonOptions);
+                await File.WriteAllTextAsync(fName, logjson);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("創建電源日誌文件時出錯\n\n{0}", ex.Message.ToString()), "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"創建電源日誌文件時出錯\n\n{ex.Message}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(-1);
             }
         }
 
-        internal int LoadPowerLog(DateTime dt, bool isHistoryRead)
+        internal async Task<int> LoadPowerLogAsync(DateTime dt, bool isHistoryRead)
         {
-            string fName = string.Format("D:/Program Files (x86)/TEMP/powerlog/powerlog_{0:D4}{1:D2}{2:D2}.json", dt.Year, dt.Month, dt.Day);
+            string fName = GetLogFilePath(dt);
 
             if (File.Exists(fName))
             {
-                using (FileStream fs = File.OpenRead(fName))
+                try
                 {
-                    using (StreamReader sr = new StreamReader(fs, System.Text.Encoding.UTF8))
-                    {
-                        while (!sr.EndOfStream)
-                        {
-                            gpupowerlog.rawdata = JsonSerializer.Deserialize<GPUPowerLog.RawData>(sr.ReadToEnd());
-                        }
-                    }
+                    string json = await File.ReadAllTextAsync(fName);
+                    gpupowerlog.rawdata = JsonSerializer.Deserialize<GPUPowerLog.RawData>(json) ?? new GPUPowerLog.RawData();
+                    return 0;
                 }
-                return 0;
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"讀取電源日誌文件時出錯\n\n{ex.Message}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return 1;
+                }
             }
             else
             {
                 if (!isHistoryRead)
                 {
-                    CreatePowerLogFile();
+                    await PowerLogFile.CreatePowerLogFileAsync();
                     return 2;
                 }
                 else
@@ -70,31 +74,19 @@ namespace VRCGPUTool.Util
             }
         }
 
-        internal void SavePowerLog(bool isDayBefore)
+        internal async Task SavePowerLogAsync()
         {
             DateTime dt = DateTime.Now.Date;
-
-            if (isDayBefore)
-            {
-                dt = dt.AddDays(-1);
-            }
-
-            string fName = string.Format("D:/Program Files (x86)/TEMP/powerlog/powerlog_{0:D4}{1:D2}{2:D2}.json", dt.Year, dt.Month, dt.Day);
+            string fName = GetLogFilePath(dt);
 
             try
             {
-                GPUPowerLog plog = new GPUPowerLog();
-
-                string logjson = JsonSerializer.Serialize(gpupowerlog.rawdata);
-
-                using (StreamWriter sw = new StreamWriter(fName))
-                {
-                    sw.WriteLine(logjson);
-                }
+                string logjson = JsonSerializer.Serialize(gpupowerlog.rawdata, s_jsonOptions);
+                await File.WriteAllTextAsync(fName, logjson);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("更新電源日誌文件時出錯\n\n{0}", ex.Message.ToString()), "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"更新電源日誌文件時出錯\n\n{ex.Message}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(-1);
             }
         }

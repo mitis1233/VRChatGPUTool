@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
@@ -21,118 +21,116 @@ namespace VRCGPUTool.Form
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingForm));
-            this.DataProvideAllow = new System.Windows.Forms.CheckBox();
-            this.RegisterStartup = new System.Windows.Forms.Button();
-            this.DeleteStartup = new System.Windows.Forms.Button();
-            this.GeneralGroup = new System.Windows.Forms.GroupBox();
-            this.ConfigFileRecreate = new System.Windows.Forms.Button();
-            this.PriceSettingRecreate = new System.Windows.Forms.Button();
-            this.UsageLogDelete = new System.Windows.Forms.Button();
-            this.DataGroup = new System.Windows.Forms.GroupBox();
-            this.GeneralGroup.SuspendLayout();
-            this.DataGroup.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // DataProvideAllow
-            // 
-            this.DataProvideAllow.Location = new System.Drawing.Point(25, 18);
-            this.DataProvideAllow.Name = "DataProvideAllow";
-            this.DataProvideAllow.Size = new System.Drawing.Size(150, 18);
-            this.DataProvideAllow.TabIndex = 0;
-            this.DataProvideAllow.Text = "提供使用數據";
-            this.DataProvideAllow.CheckedChanged += new System.EventHandler(this.DataProvideAllow_CheckedChanged);
+            ComponentResourceManager resources = new ComponentResourceManager(typeof(SettingForm));
+            RegisterStartup = new Button();
+            DeleteStartup = new Button();
+            GeneralGroup = new GroupBox();
+            ConfigFileRecreate = new Button();
+            PriceSettingRecreate = new Button();
+            UsageLogDelete = new Button();
+            DataGroup = new GroupBox();
+            GeneralGroup.SuspendLayout();
+            DataGroup.SuspendLayout();
+            SuspendLayout();
             // 
             // RegisterStartup
             // 
-            this.RegisterStartup.Location = new System.Drawing.Point(25, 42);
-            this.RegisterStartup.Name = "RegisterStartup";
-            this.RegisterStartup.Size = new System.Drawing.Size(150, 18);
-            this.RegisterStartup.TabIndex = 1;
-            this.RegisterStartup.Text = "開機自動開啟登録";
-            this.RegisterStartup.Click += new System.EventHandler(this.RegisterStartup_Click);
+            RegisterStartup.Location = new Point(29, 24);
+            RegisterStartup.Margin = new Padding(4);
+            RegisterStartup.Name = "RegisterStartup";
+            RegisterStartup.Size = new Size(175, 22);
+            RegisterStartup.TabIndex = 1;
+            RegisterStartup.Text = "開機自動開啟登録";
+            RegisterStartup.Click += RegisterStartup_Click;
             // 
             // DeleteStartup
             // 
-            this.DeleteStartup.Location = new System.Drawing.Point(25, 65);
-            this.DeleteStartup.Name = "DeleteStartup";
-            this.DeleteStartup.Size = new System.Drawing.Size(150, 18);
-            this.DeleteStartup.TabIndex = 2;
-            this.DeleteStartup.Text = "開機自動開啟解除";
-            this.DeleteStartup.Click += new System.EventHandler(this.DeleteStartup_Click);
+            DeleteStartup.Location = new Point(29, 64);
+            DeleteStartup.Margin = new Padding(4);
+            DeleteStartup.Name = "DeleteStartup";
+            DeleteStartup.Size = new Size(175, 22);
+            DeleteStartup.TabIndex = 2;
+            DeleteStartup.Text = "開機自動開啟解除";
+            DeleteStartup.Click += DeleteStartup_Click;
             // 
             // GeneralGroup
             // 
-            this.GeneralGroup.Controls.Add(this.DeleteStartup);
-            this.GeneralGroup.Controls.Add(this.RegisterStartup);
-            this.GeneralGroup.Controls.Add(this.DataProvideAllow);
-            this.GeneralGroup.Location = new System.Drawing.Point(10, 9);
-            this.GeneralGroup.Name = "GeneralGroup";
-            this.GeneralGroup.Size = new System.Drawing.Size(200, 102);
-            this.GeneralGroup.TabIndex = 1;
-            this.GeneralGroup.TabStop = false;
-            this.GeneralGroup.Text = "一般";
+            GeneralGroup.Controls.Add(DeleteStartup);
+            GeneralGroup.Controls.Add(RegisterStartup);
+            GeneralGroup.Location = new Point(12, 11);
+            GeneralGroup.Margin = new Padding(4);
+            GeneralGroup.Name = "GeneralGroup";
+            GeneralGroup.Padding = new Padding(4);
+            GeneralGroup.Size = new Size(233, 104);
+            GeneralGroup.TabIndex = 1;
+            GeneralGroup.TabStop = false;
+            GeneralGroup.Text = "一般";
             // 
             // ConfigFileRecreate
             // 
-            this.ConfigFileRecreate.Location = new System.Drawing.Point(25, 18);
-            this.ConfigFileRecreate.Name = "ConfigFileRecreate";
-            this.ConfigFileRecreate.Size = new System.Drawing.Size(150, 18);
-            this.ConfigFileRecreate.TabIndex = 3;
-            this.ConfigFileRecreate.Text = "設置文件削除";
-            this.ConfigFileRecreate.Click += new System.EventHandler(this.ConfigFileRecreate_Click);
+            ConfigFileRecreate.Location = new Point(29, 24);
+            ConfigFileRecreate.Margin = new Padding(4);
+            ConfigFileRecreate.Name = "ConfigFileRecreate";
+            ConfigFileRecreate.Size = new Size(175, 22);
+            ConfigFileRecreate.TabIndex = 3;
+            ConfigFileRecreate.Text = "設置文件削除";
+            ConfigFileRecreate.Click += ConfigFileRecreate_Click;
             // 
             // PriceSettingRecreate
             // 
-            this.PriceSettingRecreate.Location = new System.Drawing.Point(25, 42);
-            this.PriceSettingRecreate.Name = "PriceSettingRecreate";
-            this.PriceSettingRecreate.Size = new System.Drawing.Size(150, 18);
-            this.PriceSettingRecreate.TabIndex = 4;
-            this.PriceSettingRecreate.Text = "電費設定削除";
-            this.PriceSettingRecreate.Click += new System.EventHandler(this.PriceSettingRecreate_Click);
+            PriceSettingRecreate.Location = new Point(29, 69);
+            PriceSettingRecreate.Margin = new Padding(4);
+            PriceSettingRecreate.Name = "PriceSettingRecreate";
+            PriceSettingRecreate.Size = new Size(175, 22);
+            PriceSettingRecreate.TabIndex = 4;
+            PriceSettingRecreate.Text = "電費設定削除";
+            PriceSettingRecreate.Click += PriceSettingRecreate_Click;
             // 
             // UsageLogDelete
             // 
-            this.UsageLogDelete.Location = new System.Drawing.Point(25, 65);
-            this.UsageLogDelete.Name = "UsageLogDelete";
-            this.UsageLogDelete.Size = new System.Drawing.Size(150, 18);
-            this.UsageLogDelete.TabIndex = 5;
-            this.UsageLogDelete.Text = "用電量歷史削除";
-            this.UsageLogDelete.Click += new System.EventHandler(this.UsageLogDelete_Click);
+            UsageLogDelete.Location = new Point(29, 111);
+            UsageLogDelete.Margin = new Padding(4);
+            UsageLogDelete.Name = "UsageLogDelete";
+            UsageLogDelete.Size = new Size(175, 22);
+            UsageLogDelete.TabIndex = 5;
+            UsageLogDelete.Text = "用電量歷史削除";
+            UsageLogDelete.Click += UsageLogDelete_Click;
             // 
             // DataGroup
             // 
-            this.DataGroup.Controls.Add(this.UsageLogDelete);
-            this.DataGroup.Controls.Add(this.PriceSettingRecreate);
-            this.DataGroup.Controls.Add(this.ConfigFileRecreate);
-            this.DataGroup.Location = new System.Drawing.Point(10, 120);
-            this.DataGroup.Name = "DataGroup";
-            this.DataGroup.Size = new System.Drawing.Size(200, 102);
-            this.DataGroup.TabIndex = 0;
-            this.DataGroup.TabStop = false;
-            this.DataGroup.Text = "數據";
+            DataGroup.Controls.Add(UsageLogDelete);
+            DataGroup.Controls.Add(PriceSettingRecreate);
+            DataGroup.Controls.Add(ConfigFileRecreate);
+            DataGroup.Location = new Point(12, 123);
+            DataGroup.Margin = new Padding(4);
+            DataGroup.Name = "DataGroup";
+            DataGroup.Padding = new Padding(4);
+            DataGroup.Size = new Size(233, 155);
+            DataGroup.TabIndex = 0;
+            DataGroup.TabStop = false;
+            DataGroup.Text = "數據";
             // 
             // SettingForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(220, 231);
-            this.Controls.Add(this.DataGroup);
-            this.Controls.Add(this.GeneralGroup);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "SettingForm";
-            this.Text = "設定";
-            this.GeneralGroup.ResumeLayout(false);
-            this.DataGroup.ResumeLayout(false);
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(257, 289);
+            Controls.Add(DataGroup);
+            Controls.Add(GeneralGroup);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(4);
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "SettingForm";
+            Text = "設定";
+            GeneralGroup.ResumeLayout(false);
+            DataGroup.ResumeLayout(false);
+            ResumeLayout(false);
 
         }
 
         private GroupBox GeneralGroup;
-        private CheckBox DataProvideAllow;
         private GroupBox DataGroup;
         private Button UsageLogDelete;
         private Button PriceSettingRecreate;

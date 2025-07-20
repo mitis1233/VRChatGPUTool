@@ -1,44 +1,29 @@
 namespace VRCGPUTool
 {
-    internal class GpuStatus
-    {
-        public string Name { get; private set; }
-        public string UUID { get; private set; }
-        public int PLimit { get; private set; }
-        public int PLimitMin { get; private set; }
-        public int PLimitMax { get; private set; }
-        public int PLimitDefault { get; private set; }
-        public int CoreLoad { get; private set; }
-        public int CoreTemp { get; private set; }
-        public int PowerDraw { get; private set; }
-        public int CoreClock { get; private set; }
-        public int MemoryClock { get; private set; }
-
-        public GpuStatus(
-            string Name,
-            string UUID,
-            int PLimit,
-            int PLimitMin,
-            int PLimitMax,
-            int PLimitDefault,
-            int CoreLoad,
-            int CoreTemp,
-            int PowerDraw,
-            int CoreClock,
-            int MemoryClock
+    internal class GpuStatus(
+        string Name,
+        string UUID,
+        int PLimit,
+        int PLimitMin,
+        int PLimitMax,
+        int PLimitDefault,
+        int CoreLoad,
+        int CoreTemp,
+        int PowerDraw,
+        int CoreClock,
+        int MemoryClock
         )
-        {
-            this.Name = Name;
-            this.UUID = UUID;
-            this.PLimit = PLimit;
-            this.PLimitMin = PLimitMin;
-            this.PLimitMax = PLimitMax;
-            this.PLimitDefault = PLimitDefault;
-            this.CoreLoad = CoreLoad;
-            this.CoreTemp = CoreTemp;
-            this.PowerDraw = PowerDraw;
-            this.CoreClock = CoreClock;
-            this.MemoryClock = MemoryClock;
-        }
+    {
+        public string Name { get; private set; } = Name;
+        public string UUID { get; private set; } = UUID;
+        public int PLimit { get; private set; } = PLimit;
+        public int PLimitMin { get; private set; } = PLimitMin;
+        public int PLimitMax { get; private set; } = PLimitMax;
+        public int PLimitDefault { get; private set; } = PLimitDefault;
+        public int CoreLoad { get; private set; } = CoreLoad;
+        public int CoreTemp { get; private set; } = CoreTemp;
+        public int PowerDraw { get; private set; } = PowerDraw;
+        public int CoreClock { get; private set; } = CoreClock;
+        public int MemoryClock { get; private set; } = MemoryClock;
     }
 }

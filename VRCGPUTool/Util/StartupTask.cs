@@ -11,32 +11,32 @@ namespace VRCGPUTool.Util
         private const string AUTHOR = "njm2360";
         private const string DESCRIPTION = "";
 
-        public void registerTask()
+        public static void RegisterTask()
         {
             try
             {
-                using (TaskService ts = new TaskService())
+                using TaskService ts = new();
+                TaskDefinition td = ts.NewTask();
+                td.RegistrationInfo.Author = AUTHOR;
+                td.RegistrationInfo.Description = DESCRIPTION;
+
+                td.Principal.UserId = $@"{Environment.UserDomainName}\{Environment.UserName}";
+                td.Principal.LogonType = TaskLogonType.InteractiveToken;
+                td.Principal.RunLevel = TaskRunLevel.Highest;
+
+                LogonTrigger lt = new()
                 {
-                    TaskDefinition td = ts.NewTask();
-                    td.RegistrationInfo.Author = AUTHOR;
-                    td.RegistrationInfo.Description = DESCRIPTION;
+                    UserId = $@"{Environment.UserDomainName}\{Environment.UserName}"
+                };
+                td.Triggers.Add(lt);
 
-                    td.Principal.UserId = $@"{Environment.UserDomainName}\{Environment.UserName}";
-                    td.Principal.LogonType = TaskLogonType.InteractiveToken;
-                    td.Principal.RunLevel = TaskRunLevel.Highest;
+                td.Settings.ExecutionTimeLimit = TimeSpan.Zero;
+                td.Settings.DisallowStartIfOnBatteries = true;
+                td.Settings.Priority = System.Diagnostics.ProcessPriorityClass.BelowNormal;
 
-                    LogonTrigger lt = new LogonTrigger();
-                    lt.UserId = $@"{Environment.UserDomainName}\{Environment.UserName}";
-                    td.Triggers.Add(lt);
+                td.Actions.Add(new ExecAction(Application.ExecutablePath, null, Path.GetDirectoryName(Application.ExecutablePath)));
 
-                    td.Settings.ExecutionTimeLimit = TimeSpan.Zero;
-                    td.Settings.DisallowStartIfOnBatteries = true;
-                    td.Settings.Priority = System.Diagnostics.ProcessPriorityClass.BelowNormal;
-
-                    td.Actions.Add(new ExecAction(Application.ExecutablePath, null, Path.GetDirectoryName(Application.ExecutablePath)));
-
-                    ts.RootFolder.RegisterTaskDefinition(TASK_NAME, td, TaskCreation.CreateOrUpdate, null, null, TaskLogonType.None);
-                }
+                ts.RootFolder.RegisterTaskDefinition(TASK_NAME, td, TaskCreation.CreateOrUpdate, null, null, TaskLogonType.None);
             }
             catch (Exception ex)
             {
@@ -44,14 +44,12 @@ namespace VRCGPUTool.Util
             }
         }
 
-        public void removeTask()
+        public static void RemoveTask()
         {
             try
             {
-                using (TaskService ts = new TaskService())
-                {
-                    ts.RootFolder.DeleteTask(TASK_NAME);
-                }
+                using TaskService ts = new();
+                ts.RootFolder.DeleteTask(TASK_NAME);
             }
             catch
             {

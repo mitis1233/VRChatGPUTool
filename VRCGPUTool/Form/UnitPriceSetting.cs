@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using VRCGPUTool.Util;
@@ -31,7 +31,7 @@ namespace VRCGPUTool.Form
             }
         }
 
-        private void ConfigButton_Click(object sender, EventArgs e)
+        private async void ConfigButton_Click(object sender, EventArgs e)
         {
             if (listBox1.Items.Count != 0)
             {
@@ -97,7 +97,7 @@ namespace VRCGPUTool.Form
                 }
             }
 
-            powerProfile.SaveProfileFile();
+            await powerProfile.SaveProfileFileAsync();
         }
 
         private SolidBrush NewSB()

@@ -11,7 +11,7 @@ namespace VRCGPUTool
         static void Main()
         {
             string mutexName = "VRChatGPUTool";
-            Mutex mutex = new Mutex(true, mutexName, out bool createdNew);
+            Mutex mutex = new(true, mutexName, out bool createdNew);
             if (createdNew)
             {
                 try

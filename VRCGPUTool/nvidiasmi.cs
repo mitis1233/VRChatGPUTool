@@ -1,112 +1,66 @@
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using VRCGPUTool.Form;
 
 namespace VRCGPUTool
 {
-    partial class NvidiaSmi
+    internal class NvidiaSmi(MainForm main_Obj)
     {
-        public MainForm MainObj;
-        internal BackgroundWorker NvsmiWorker;
+        public MainForm MainObj = main_Obj;
 
-        internal string[] queryColumns = {
-            "name",
-            "uuid",
-            "power.limit",
-            "power.min_limit",
-            "power.max_limit",
-            "power.default_limit",
-            "utilization.gpu",
-            "temperature.gpu",
-            "power.draw",
-            "clocks.gr",
-            "clocks.mem",
-        };
+        internal readonly string[] queryColumns = [
+            "name", "uuid", "power.limit", "power.min_limit", "power.max_limit",
+            "power.default_limit", "utilization.gpu", "temperature.gpu", "power.draw",
+            "clocks.gr", "clocks.mem"
+        ];
 
-        public NvidiaSmi(MainForm Main_Obj)
+        internal static async Task<string> NvidiaSmiCommandAsync(string param)
         {
-            MainObj = Main_Obj;
-            InitializeNvsmiWorker();
-        }
+            var processStartInfo = new ProcessStartInfo("nvidia-smi.exe")
+            {
+                WorkingDirectory = @"C:\Windows\system32\",
+                Arguments = param,
+                Verb = "RunAs",
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                RedirectStandardOutput = true
+            };
 
-        private void InitializeNvsmiWorker()
-        {
-            NvsmiWorker = new BackgroundWorker();
-            NvsmiWorker.DoWork += new DoWorkEventHandler(NvsmiWorker_DoWork);
-            NvsmiWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(NvsmiWorker_RunWorkerCompleted);
-        }
-
-        internal string nvidia_smi(string param)
-        {
-            Console.WriteLine(param);
-
-            ProcessStartInfo nvsmi = new ProcessStartInfo("nvidia-smi.exe");
-            nvsmi.WorkingDirectory = @"C:\Windows\system32\";
-            nvsmi.Arguments = param;
-            nvsmi.Verb = "RunAs";
-            nvsmi.CreateNoWindow = true;
-            nvsmi.UseShellExecute = false;
-            nvsmi.RedirectStandardOutput = true;
-
-            Process p = Process.Start(nvsmi);
-
-            string output = p.StandardOutput.ReadToEnd();
-
-            p.Dispose();
-
+            using var process = Process.Start(processStartInfo);
+            if (process == null) return string.Empty;
+            string output = await process.StandardOutput.ReadToEndAsync();
+            await process.WaitForExitAsync();
             return output;
         }
 
-        internal void NvsmiWorker_DoWork(object sender, DoWorkEventArgs e)
+        internal async Task FetchGpuStatusAsync()
         {
             string query = string.Join(",", queryColumns);
+            string output = await NvidiaSmiCommandAsync($"--query-gpu={query} --format=csv,noheader,nounits");
 
-            string output = nvidia_smi(string.Format("--query-gpu={0} --format=csv,noheader,nounits", query));
+            if (string.IsNullOrWhiteSpace(output)) return;
 
-            e.Result = output;
-        }
+            ParseGpuData(output);
 
-        private void NvsmiWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            try
-            {
-                ParseGpuData(e.Result.ToString());
-            }
-            catch (FormatException)
-            {
-                MessageBox.Show("發生意外的錯誤。 \n強制終止應用程式。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Environment.Exit(-1);
-            }
+            if (MainObj.gpuStatuses.Count == 0) return;
 
-            if (!MainObj.gpuStatuses.Any())
-            {
-                MessageBox.Show("在我的系統中不再檢測到 NVIDIA GPU。 \n請檢查支持的 GPU 是否被識別。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
-            }
-
-            GpuStatus g = MainObj.gpuStatuses.ElementAt(MainObj.GpuIndex.SelectedIndex);
+            GpuStatus g = MainObj.gpuStatuses[MainObj.GpuIndex.SelectedIndex];
             MainObj.UpdateGpuInfoUI(g);
 
-            DateTime datetime_now = DateTime.Now;
-
-            MainObj.gpuPlog.PowerLogging(datetime_now, g, MainObj.gpuPlog, MainObj);
+            await MainObj.gpuPlog.PowerLoggingAsync(DateTime.Now, g);
 
             if ((MainObj.PowerLimitValue.Value != g.PLimit) && MainObj.limitstatus && (MainObj.limittime > 2))
             {
-                if (datetime_now.Hour == MainObj.BeginTime.Value.Hour && datetime_now.Minute == MainObj.BeginTime.Value.Minute)
-                {
-                    MainObj.BeginTime.Value = DateTime.Now.AddMinutes(15);
-                }
-                MainObj.Limit_Action(false, true);
+                await MainObj.Limit_Action(false, true);
                 MessageBox.Show("由於外部工具更改了功率限制值，限制已終止。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        internal void CheckNvidiaSmi()
+        internal static void CheckNvidiaSmi()
         {
             if (!File.Exists(@"C:\Windows\system32\nvidia-smi.exe"))
             {
@@ -115,41 +69,47 @@ namespace VRCGPUTool
             }
         }
 
-        internal void InitGPU()
+        internal async Task InitGPUAsync()
         {
             string query = string.Join(",", queryColumns);
-            string res = nvidia_smi(string.Format("--query-gpu={0} --format=csv,noheader,nounits", query));
-            try
+            string res = await NvidiaSmiCommandAsync($"--query-gpu={query} --format=csv,noheader,nounits");
+
+            if (string.IsNullOrWhiteSpace(res))
             {
-                ParseGpuData(res);
-                foreach (GpuStatus g in MainObj.gpuStatuses)
-                {
-                    MainObj.GpuIndex.Items.Add(g.Name);
-                }
-            }
-            catch (FormatException)
-            {
-                MessageBox.Show("此 GPU 不支持功率上限。 \n終止應用程式。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                MainObj.Close();
+                MessageBox.Show("無法從 nvidia-smi 獲取 GPU 資訊。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+                return;
             }
 
-            if (!MainObj.gpuStatuses.Any())
+            ParseGpuData(res);
+
+            if (MainObj.gpuStatuses.Count == 0)
             {
-                MessageBox.Show("系統中未檢測到 NVIDIA GPU。 \n請檢查是否安裝了兼容的 GPU。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("系統中未檢測到 NVIDIA GPU。", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
+                return;
             }
+
+            MainObj.GpuIndex.Items.Clear();
+            foreach (GpuStatus g in MainObj.gpuStatuses)
+            {
+                MainObj.GpuIndex.Items.Add(g.Name);
+            }
+            MainObj.GpuIndex.SelectedIndex = 0;
         }
-        
+
         private void ParseGpuData(string data)
         {
             MainObj.gpuStatuses.Clear();
-            using (var r = new StringReader(data))
-            {
-                for (string l = r.ReadLine(); l != null; l = r.ReadLine())
-                {
-                    string[] v = l.Split(',');
-                    if (v.Length != queryColumns.Length) continue;
+            var lines = data.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
 
+            foreach (var line in lines)
+            {
+                string[] v = line.Split(',');
+                if (v.Length != queryColumns.Length) continue;
+
+                try
+                {
                     MainObj.gpuStatuses.Add(new GpuStatus(
                         v[0].Trim(),
                         v[1].Trim(),
@@ -163,6 +123,10 @@ namespace VRCGPUTool
                         (int)Math.Round(decimal.Parse(v[9])),
                         (int)Math.Round(decimal.Parse(v[10]))
                     ));
+                }
+                catch (FormatException)
+                {
+                    // Skip lines that cannot be parsed
                 }
             }
         }

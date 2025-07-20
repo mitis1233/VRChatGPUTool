@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Reflection;
 using System.Drawing;
+using System.Threading.Tasks;
 using VRCGPUTool.Util;
 
 namespace VRCGPUTool.Form
@@ -22,22 +23,24 @@ namespace VRCGPUTool.Form
             notifyIcon.Visible = false;
         }
 
-        private NvidiaSmi nvsmi;
+        private readonly NvidiaSmi nvsmi;
 
-        private AutoLimit autoLimit;
+        private readonly AutoLimit autoLimit;
         private PowerHistory history;
         internal GPUPowerLog gpuPlog;
-        internal List<GpuStatus> gpuStatuses = new List<GpuStatus>();
+        private PowerLogFile powerLogFile;
+        internal List<GpuStatus> gpuStatuses = [];
 
         internal bool limitstatus = false;
-        internal bool allowDataProvide = false;
+
         internal string guid = "";
         private bool ignoreTimeCheck = false;
         internal int limittime = 0;
         private DateTime datetime_now = DateTime.Now;
-        private int uiUpdateCounter = 0;
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private bool isFetchingGpuStatus = false;
+
+        private async void MainForm_Load(object sender, EventArgs _)
         {
             Icon appIcon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
             Icon = appIcon;
@@ -45,35 +48,31 @@ namespace VRCGPUTool.Form
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
             Text += fileVersionInfo.ProductVersion;
 
-            nvsmi.CheckNvidiaSmi();
-            nvsmi.InitGPU();
+            NvidiaSmi.CheckNvidiaSmi();
+            await nvsmi.InitGPUAsync();
 
+            LoadConfig();
+            LoadPowerLog();
 
+            if (gpuStatuses.Count != 0)
+            {
+                GpuStatus firstGpu = gpuStatuses.First();
+                SpecificPLValue.Value = Convert.ToDecimal(firstGpu.PLimit);
+                PowerLimitValue.Value = Convert.ToDecimal(firstGpu.PLimitMin);
+                GPUCorePLValue.Text = $"GPU限制:        {firstGpu.PLimit}W";
+            }
 
-            ConfigFile config = new ConfigFile(this);
-            config.LoadConfig();
-
-            PowerLogFile plog = new PowerLogFile(gpuPlog);
-            Directory.CreateDirectory("powerlog");
-            plog.LoadPowerLog(DateTime.Now, false);
-
-            GpuStatus firstGpu = gpuStatuses.First();
-            SpecificPLValue.Value = Convert.ToDecimal(firstGpu.PLimit);
-            PowerLimitValue.Value = Convert.ToDecimal(firstGpu.PLimitMin);
-            GPUCorePLValue.Text = "GPU限制:        " + firstGpu.PLimit.ToString() + "W";
-
-
-            GPUreadTimer.Interval = 800;
+            GPUreadTimer.Interval = 1000; // 1 second
             GPUreadTimer.Enabled = true;
 
             BeginTime.Enabled = limitime.Checked;
             EndTime.Enabled = limitime.Checked;
         }
 
-        internal void Limit_Action(bool limit, bool expection)
+        internal async Task Limit_Action(bool limit, bool expection)
         {
-            GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
-            if (limit == true)
+            GpuStatus g = gpuStatuses[GpuIndex.SelectedIndex];
+            if (limit)
             {
                 limitstatus = true;
                 LimitStatusText.Visible = true;
@@ -92,12 +91,12 @@ namespace VRCGPUTool.Form
                 button150.Enabled = false;
                 button200.Enabled = false;
 
-                if (CoreLimitEnable.Checked == true)
+                if (CoreLimitEnable.Checked)
                 {
-                    nvsmi.nvidia_smi($"-lgc 210,{CoreClockSetting.Value}--id={g.UUID}");
+                    await NvidiaSmi.NvidiaSmiCommandAsync($"-lgc 210,{CoreClockSetting.Value} --id={g.UUID}");
                 }
 
-                nvsmi.nvidia_smi($"-pl {PowerLimitValue.Value} --id={g.UUID}");
+                await NvidiaSmi.NvidiaSmiCommandAsync($"-pl {PowerLimitValue.Value} --id={g.UUID}");
                 GPUCorePLValue.Text = $"GPU限制:        {PowerLimitValue.Value}W";
             }
             else
@@ -119,28 +118,28 @@ namespace VRCGPUTool.Form
                 button150.Enabled = true;
                 button200.Enabled = true;
 
-                if (CoreLimitEnable.Checked == true)
+                if (CoreLimitEnable.Checked)
                 {
-                    nvsmi.nvidia_smi($"-rgc --id={g.UUID}");
+                    await NvidiaSmi.NvidiaSmiCommandAsync($"-rgc --id={g.UUID}");
                 }
 
-                if (expection == false)
+                if (!expection)
                 {
-                    if (ResetGPUDefaultPL.Checked == true)
+                    if (ResetGPUDefaultPL.Checked)
                     {
-                        nvsmi.nvidia_smi($"-pl {g.PLimitDefault} --id={g.UUID}");
+                        await NvidiaSmi.NvidiaSmiCommandAsync($"-pl {g.PLimitDefault} --id={g.UUID}");
                         GPUCorePLValue.Text = $"GPU限制:        {g.PLimitDefault}W";
                     }
                     else
                     {
-                        nvsmi.nvidia_smi($"-pl {SpecificPLValue.Value} --id={g.UUID}");
+                        await NvidiaSmi.NvidiaSmiCommandAsync($"-pl {SpecificPLValue.Value} --id={g.UUID}");
                         GPUCorePLValue.Text = $"GPU限制:        {SpecificPLValue.Value}W";
                     }
                 }
             }
         }
 
-        private void ForceLimit_Click(object sender, EventArgs e)
+        private async void ForceLimit_Click(object sender, EventArgs _)
         {
             if (datetime_now.Hour == EndTime.Value.Hour && datetime_now.Minute == EndTime.Value.Minute)
             {
@@ -149,16 +148,16 @@ namespace VRCGPUTool.Form
                 {
                     ignoreTimeCheck = true;
                     EndTime.Value = DateTime.Now.AddMinutes(60);
-                    Limit_Action(true, false);
+                    await Limit_Action(true, false);
                 }
             }
             else
             {
-                Limit_Action(true, false);
+                await Limit_Action(true, false);
             }
         }
 
-        private void ForceUnlimit_Click(object sender, EventArgs e)
+        private async void ForceUnlimit_Click(object sender, EventArgs _)
         {
             if (datetime_now.Hour == BeginTime.Value.Hour && datetime_now.Minute == BeginTime.Value.Minute)
             {
@@ -167,45 +166,41 @@ namespace VRCGPUTool.Form
                 {
                     ignoreTimeCheck = true;
                     BeginTime.Value = DateTime.Now.AddMinutes(60);
-                    Limit_Action(false, false);
+                    await Limit_Action(false, false);
                 }
             }
             else
             {
-                Limit_Action(false, false);
+                await Limit_Action(false, false);
             }
         }
 
-        private void SelectGPUChanged(object sender, EventArgs e)
+        private void SelectGPUChanged(object sender, EventArgs _)
         {
-            GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
+            GpuStatus g = gpuStatuses[GpuIndex.SelectedIndex];
             PowerLimitValue.Value = Convert.ToDecimal(g.PLimit);
             GPUCorePLValue.Text = "GPU限制:        " + g.PLimit + "W";
         }
 
-        private void GPUreadTimer_Tick(object sender, EventArgs e)
+        private async void GPUreadTimer_Tick(object sender, EventArgs e)
         {
-            if (this.Visible == false || this.WindowState == FormWindowState.Minimized)
+            if (this.Visible == false || this.WindowState == FormWindowState.Minimized || isFetchingGpuStatus)
             {
                 return;
             }
 
-            uiUpdateCounter++;
-
-            if (uiUpdateCounter % 2 == 0) // Executes every 2 seconds
+            isFetchingGpuStatus = true;
+            try
             {
-                if (nvsmi.NvsmiWorker.IsBusy == false)
-                {
-                    nvsmi.NvsmiWorker.RunWorkerAsync();
-                }
+                await nvsmi.FetchGpuStatusAsync();
 
-                if (AutoDetect.Checked == true && limitstatus == true)
+                if (AutoDetect.Checked && limitstatus)
                 {
                     try
                     {
-                        if (autoLimit.CheckAutoLimit(gpuStatuses.ElementAt(GpuIndex.SelectedIndex)))
+                        if (autoLimit.CheckAutoLimit(gpuStatuses[GpuIndex.SelectedIndex]))
                         {
-                            Limit_Action(true, false);
+                            await Limit_Action(true, false);
                         }
                     }
                     catch (Exception ex)
@@ -215,15 +210,21 @@ namespace VRCGPUTool.Form
                 }
 
                 datetime_now = DateTime.Now;
-                if (datetime_now.Hour == BeginTime.Value.Hour && datetime_now.Minute == BeginTime.Value.Minute && !limitstatus && limitime.Checked)
+                if (limitime.Checked && !ignoreTimeCheck)
                 {
-                    Limit_Action(true, false);
+                    if (datetime_now.Hour == BeginTime.Value.Hour && datetime_now.Minute == BeginTime.Value.Minute && !limitstatus)
+                    {
+                        await Limit_Action(true, false);
+                    }
+                    if (datetime_now.Hour == EndTime.Value.Hour && datetime_now.Minute == EndTime.Value.Minute && limitstatus)
+                    {
+                        await Limit_Action(false, false);
+                    }
                 }
-                if (datetime_now.Hour == EndTime.Value.Hour && datetime_now.Minute == EndTime.Value.Minute && limitstatus && limitime.Checked)
-                {
-                    AutoDetect.Checked = false;
-                    Limit_Action(false, false);
-                }
+            }
+            finally
+            {
+                isFetchingGpuStatus = false;
             }
 
             if (limitstatus)
@@ -267,7 +268,7 @@ namespace VRCGPUTool.Form
         }
 
 
-        private void SetGPUPLSpecific_CheckedChanged(object sender, EventArgs e)
+        private void SetGPUPLSpecific_CheckedChanged(object sender, EventArgs _)
         {
             if (SetGPUPLSpecific.Checked == true)
             {
@@ -279,51 +280,52 @@ namespace VRCGPUTool.Form
             }
         }
 
-        private void LoadMinimumLimit_Click(object sender, EventArgs e)
+        private void LoadMinimumLimit_Click(object sender, EventArgs _)
         {
             GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
             PowerLimitValue.Value = Convert.ToDecimal(g.PLimitMin);
         }
 
-        private void LoadDefaultLimit_Click(object sender, EventArgs e)
+        private void LoadDefaultLimit_Click(object sender, EventArgs _)
         {
             GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
             PowerLimitValue.Value = Convert.ToDecimal(g.PLimitDefault);
         }
 
-        private void LoadMaximumLimit_Click(object sender, EventArgs e)
+        private void LoadMaximumLimit_Click(object sender, EventArgs _)
         {
             GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
             PowerLimitValue.Value = Convert.ToDecimal(g.PLimitMax);
         }
 
-        private void AppClosing(object sender, FormClosingEventArgs e)
+        private async void AppClosing(object sender, FormClosingEventArgs _)
         {
             if (limitstatus == true)
             {
-                Limit_Action(false, false);
+                await Limit_Action(false, false);
             }
 
-            ConfigFile config = new ConfigFile(this);
-            config.SaveConfig();
+            ConfigFile config = new(this);
+            await config.SaveConfigAsync();
 
-            PowerLogFile plog = new PowerLogFile(gpuPlog);
-            plog.SavePowerLog(false);
+            await powerLogFile.SavePowerLogAsync();
+
+            notifyIcon.Dispose();
         }
 
-        private void ResetClockSetting_Click(object sender, EventArgs e)
+        private async void ResetClockSetting_Click(object sender, EventArgs _)
         {
             GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
-            nvsmi.nvidia_smi("-rgc --id=" + g.UUID);
+            await NvidiaSmi.NvidiaSmiCommandAsync($"-rgc --id={g.UUID}");
             MessageBox.Show("已將時脈限制重設為預設值", "資訊", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void ShowHowToUse(object sender, EventArgs e)
+        private void ShowHowToUse(object sender, EventArgs _)
         {
             Process.Start(new ProcessStartInfo { FileName = "https://github.com/njm2360/VRChatGPUTool#readme", UseShellExecute = true });
         }
 
-        private void SettingTimeChange(object sender, EventArgs e)
+        private async void SettingTimeChange(object sender, EventArgs _)
         {
             if ((BeginTime.Value.Hour == EndTime.Value.Hour) && (BeginTime.Value.Minute == EndTime.Value.Minute))
             {
@@ -331,7 +333,7 @@ namespace VRCGPUTool.Form
                 {
                     if (limitstatus)
                     {
-                        Limit_Action(false, false);
+                        await Limit_Action(false, false);
                     }
                     BeginTime.Value = BeginTime.Value.AddMinutes(15);
                     MessageBox.Show("開始時間和結束時間不能設定為同一時間", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -343,13 +345,9 @@ namespace VRCGPUTool.Form
             }
         }
 
-        private void Reporter(object sender, EventArgs e)
-        {
-            BugReport report = new BugReport(this);
-            report.ShowDialog();
-        }
 
-        private void PowerLogShow_Click(object sender, EventArgs e)
+
+        private void PowerLogShow_Click(object sender, EventArgs _)
         {
             if ((history == null) || history.IsDisposed)
             {
@@ -358,15 +356,27 @@ namespace VRCGPUTool.Form
             }
         }
 
-        private void SettingButton_Click(object sender, EventArgs e)
+        private async void LoadConfig()
         {
-            SettingForm fm = new SettingForm(this);
+            ConfigFile config = new(this);
+            await config.LoadConfigAsync();
+        }
+
+        private async void LoadPowerLog()
+        {
+            powerLogFile = new PowerLogFile(gpuPlog);
+            await powerLogFile.LoadPowerLogAsync(DateTime.Now, false);
+        }
+
+        private void SettingButton_Click(object sender, EventArgs _)
+        {
+            SettingForm fm = new(this);
             fm.ShowDialog();
         }
 
-        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
+        private void NotifyIcon_MouseClick(object sender, MouseEventArgs _)
         {
-            if (e.Button == MouseButtons.Left)
+            if (this.Visible == false || this.WindowState == FormWindowState.Minimized)
             {
                 this.Visible = true;
                 this.WindowState = FormWindowState.Normal;
@@ -375,7 +385,7 @@ namespace VRCGPUTool.Form
             }
         }
 
-        private void MainWindowOpenStrip_Click(object sender, EventArgs e)
+        private void MainWindowOpenStrip_Click(object sender, EventArgs _)
         {
             this.Visible = true;
             this.WindowState = FormWindowState.Normal;
@@ -383,7 +393,7 @@ namespace VRCGPUTool.Form
             notifyIcon.Visible = false;
         }
 
-        private void ShowVersionInfoStrip_Click(object sender, EventArgs e)
+        private void ShowVersionInfoStrip_Click(object sender, EventArgs _)
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
@@ -392,30 +402,27 @@ namespace VRCGPUTool.Form
             MessageBox.Show("Version v" + versionInfo + "\n\nCopyright njm2360 Allrights reserved 2022" , "版本資訊");
         }
 
-        private void ApplicationExitStrip_Click(object sender, EventArgs e)
+        private void ApplicationExitStrip_Click(object sender, EventArgs _)
         {
             Application.Exit();
         }
 
-        private void button135_Click(object sender, EventArgs e)
+        private void Button135_Click(object sender, EventArgs _)
         {
-            GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
-            PowerLimitValue.Value = Convert.ToDecimal(450);
+            PowerLimitValue.Value = 450;
         }
 
-        private void button150_Click(object sender, EventArgs e)
+        private void Button150_Click(object sender, EventArgs _)
         {
-            GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
-            PowerLimitValue.Value = Convert.ToDecimal(500);
+            PowerLimitValue.Value = 500;
         }
 
-        private void button200_Click(object sender, EventArgs e)
+        private void Button200_Click(object sender, EventArgs _)
         {
-            GpuStatus g = gpuStatuses.ElementAt(GpuIndex.SelectedIndex);
-            PowerLimitValue.Value = Convert.ToDecimal(550);
+            PowerLimitValue.Value = 550;
         }
 
-        private void limitime_CheckedChanged(object sender, EventArgs e)
+        private void Limitime_CheckedChanged(object sender, EventArgs _)
         {
             BeginTime.Enabled = limitime.Checked;
             EndTime.Enabled = limitime.Checked;

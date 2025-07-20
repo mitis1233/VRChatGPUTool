@@ -1,4 +1,4 @@
-﻿namespace VRCGPUTool.Form
+namespace VRCGPUTool.Form
 {
     partial class PowerHistory
     {
@@ -84,7 +84,7 @@
             this.TabRange.SelectedIndex = 0;
             this.TabRange.Size = new System.Drawing.Size(826, 457);
             this.TabRange.TabIndex = 1;
-            this.TabRange.SelectedIndexChanged += new System.EventHandler(this.TabChanged);
+            this.TabRange.SelectedIndexChanged += new System.EventHandler(this.TabRange_SelectedIndexChanged);
             // 
             // tabPage1
             // 

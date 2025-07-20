@@ -1,0 +1,11 @@
+{
+  "Guid": "9ecfb4f9-9738-4485-8527-6a06028e64bb",
+  "BeginHour": 16,
+  "BeginMinute": 11,
+  "EndHour": 16,
+  "EndMinute": 26,
+  "PowerLimitSetting": 550,
+  "UnlimitPLSetting": 600,
+  "RestoreGPUPLDefault": true,
+  "SelectGPUIndex": 0
+}

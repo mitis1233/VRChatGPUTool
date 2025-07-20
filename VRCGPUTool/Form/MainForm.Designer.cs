@@ -359,7 +359,7 @@ namespace VRCGPUTool.Form
             this.button200.Size = new System.Drawing.Size(70, 25);
             this.button200.TabIndex = 22;
             this.button200.Text = "550";
-            this.button200.Click += new System.EventHandler(this.button200_Click);
+            this.button200.Click += new System.EventHandler(this.Button200_Click);
             // 
             // button150
             // 
@@ -368,7 +368,7 @@ namespace VRCGPUTool.Form
             this.button150.Size = new System.Drawing.Size(70, 25);
             this.button150.TabIndex = 21;
             this.button150.Text = "500";
-            this.button150.Click += new System.EventHandler(this.button150_Click);
+            this.button150.Click += new System.EventHandler(this.Button150_Click);
             // 
             // button135
             // 
@@ -377,7 +377,7 @@ namespace VRCGPUTool.Form
             this.button135.Size = new System.Drawing.Size(70, 25);
             this.button135.TabIndex = 20;
             this.button135.Text = "450";
-            this.button135.Click += new System.EventHandler(this.button135_Click);
+            this.button135.Click += new System.EventHandler(this.Button135_Click);
             // 
             // LimitStatusText
             // 
@@ -521,7 +521,7 @@ namespace VRCGPUTool.Form
             this.limitime.Size = new System.Drawing.Size(91, 20);
             this.limitime.TabIndex = 19;
             this.limitime.Text = "Time limit";
-            this.limitime.CheckedChanged += new System.EventHandler(this.limitime_CheckedChanged);
+            this.limitime.CheckedChanged += new System.EventHandler(this.Limitime_CheckedChanged);
             // 
             // GpuIndex
             // 
@@ -545,7 +545,7 @@ namespace VRCGPUTool.Form
             this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
             this.notifyIcon.Text = "VRChatGPUTool";
             this.notifyIcon.Visible = true;
-            this.notifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseClick);
+            this.notifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon_MouseClick);
             // 
             // notifyIconMenu
             // 
