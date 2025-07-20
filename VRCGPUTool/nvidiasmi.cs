@@ -51,7 +51,7 @@ namespace VRCGPUTool
             GpuStatus g = MainObj.gpuStatuses[MainObj.GpuIndex.SelectedIndex];
             MainObj.UpdateGpuInfoUI(g);
 
-            await MainObj.gpuPlog.PowerLoggingAsync(DateTime.Now, g);
+            MainObj.gpuPlog.PowerLogging(DateTime.Now, g);
 
             if ((MainObj.PowerLimitValue.Value != g.PLimit) && MainObj.limitstatus && (MainObj.limittime > 2))
             {

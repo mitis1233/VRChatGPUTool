@@ -28,7 +28,7 @@ namespace VRCGPUTool
             }
         }
 
-        internal async Task PowerLoggingAsync(DateTime now, GpuStatus g)
+        internal void PowerLogging(DateTime now, GpuStatus g)
         {
             if (now.Hour != rawdata.Logdate.Hour)
             {
@@ -42,7 +42,8 @@ namespace VRCGPUTool
             rawdata.HourPowerLog[now.Hour] += g.PowerDraw;
 
             PowerLogFile logfile = new(this);
-            await logfile.SavePowerLogAsync();
+            // Commented out to save log only on application close
+            // await logfile.SavePowerLogAsync();
         }
 
         private void AddPowerDeltaData(int hour,int value)

@@ -11,7 +11,7 @@ namespace VRCGPUTool.Util
     internal class PowerLogFile
     {
         private readonly GPUPowerLog gpupowerlog;
-        private static readonly JsonSerializerOptions s_jsonOptions = new() { WriteIndented = true };
+        private static readonly JsonSerializerOptions s_jsonOptions = new() { WriteIndented = false };
 
         public PowerLogFile(GPUPowerLog glog)
         {
@@ -92,4 +92,3 @@ namespace VRCGPUTool.Util
         }
     }
 }
-
