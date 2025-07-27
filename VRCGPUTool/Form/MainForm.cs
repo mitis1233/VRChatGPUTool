@@ -436,21 +436,5 @@ namespace VRCGPUTool.Form
             GPUCoreClockValue.Text = $"GPU頻率:        {g.CoreClock}MHz";
             GPUMemoryClockValue.Text = $"VRAM頻率:     {g.MemoryClock}MHz";
         }
-
-        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (GPUreadTimer.Enabled)
-            {
-                GPUreadTimer.Enabled = false;
-                await Task.Delay(500);
-            }
-            notifyIcon.Visible = false;
-            
-            // Save power log when application is closing
-            PowerLogFile logfile = new PowerLogFile(gpuPlog);
-            await logfile.SavePowerLogAsync();
-            
-            Application.Exit();
-        }
     }
 }

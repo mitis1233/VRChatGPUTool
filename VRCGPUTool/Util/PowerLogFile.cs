@@ -11,7 +11,7 @@ namespace VRCGPUTool.Util
     internal class PowerLogFile
     {
         private readonly GPUPowerLog gpupowerlog;
-        private static readonly JsonSerializerOptions s_jsonOptions = new() { WriteIndented = false };
+        private static readonly JsonSerializerOptions s_jsonOptions = new() { WriteIndented = true };
 
         public PowerLogFile(GPUPowerLog glog)
         {
@@ -24,15 +24,14 @@ namespace VRCGPUTool.Util
             return Path.Combine(PathUtil.LogDirectory, $"powerlog_{dt:yyyyMMdd}.json");
         }
 
-        internal static async Task CreatePowerLogFileAsync()
+        internal async Task CreatePowerLogFileAsync()
         {
             DateTime dt = DateTime.Now;
             string fName = GetLogFilePath(dt);
 
             try
             {
-                GPUPowerLog plog = new();
-                string logjson = JsonSerializer.Serialize(plog, s_jsonOptions);
+                string logjson = JsonSerializer.Serialize(gpupowerlog.rawdata, s_jsonOptions);
                 await File.WriteAllTextAsync(fName, logjson);
             }
             catch (Exception ex)
@@ -64,7 +63,7 @@ namespace VRCGPUTool.Util
             {
                 if (!isHistoryRead)
                 {
-                    await PowerLogFile.CreatePowerLogFileAsync();
+                    await CreatePowerLogFileAsync();
                     return 2;
                 }
                 else
@@ -92,3 +91,4 @@ namespace VRCGPUTool.Util
         }
     }
 }
+

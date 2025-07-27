@@ -28,7 +28,7 @@ namespace VRCGPUTool
             }
         }
 
-        internal void PowerLogging(DateTime now, GpuStatus g)
+        internal async Task PowerLoggingAsync(DateTime now, GpuStatus g)
         {
             if (now.Hour != rawdata.Logdate.Hour)
             {
@@ -41,9 +41,9 @@ namespace VRCGPUTool
 
             rawdata.HourPowerLog[now.Hour] += g.PowerDraw;
 
-            PowerLogFile logfile = new(this);
-            // Commented out to save log only on application close
-            // await logfile.SavePowerLogAsync();
+            // 移除即時儲存至硬碟的邏輯，改為在程式關閉時統一儲存
+            // 數據將在運行時保存於記憶體中
+            await Task.CompletedTask;
         }
 
         private void AddPowerDeltaData(int hour,int value)
