@@ -21,6 +21,8 @@ namespace VRCGPUTool.Form
             gpuPlog = new GPUPowerLog();
             autoLimit = new AutoLimit(this);
             notifyIcon.Visible = false;
+
+            this.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
         }
 
         private readonly NvidiaSmi nvsmi;
@@ -28,8 +30,10 @@ namespace VRCGPUTool.Form
         private readonly AutoLimit autoLimit;
         private PowerHistory history;
         internal GPUPowerLog gpuPlog;
-        private PowerLogFile powerLogFile;
+
         internal List<GpuStatus> gpuStatuses = [];
+
+
 
         internal bool limitstatus = false;
 
@@ -52,14 +56,13 @@ namespace VRCGPUTool.Form
             await nvsmi.InitGPUAsync();
 
             LoadConfig();
-            LoadPowerLog();
 
             if (gpuStatuses.Count != 0)
             {
                 GpuStatus firstGpu = gpuStatuses.First();
                 SpecificPLValue.Value = Convert.ToDecimal(firstGpu.PLimit);
                 PowerLimitValue.Value = Convert.ToDecimal(firstGpu.PLimitMin);
-                GPUCorePLValue.Text = $"GPU限制:        {firstGpu.PLimit}W";
+                GPUCorePLValue.Text = $"GPU 功率限制: {firstGpu.PLimit}W";
             }
 
             GPUreadTimer.Interval = 1000; // 1 second
@@ -97,7 +100,7 @@ namespace VRCGPUTool.Form
                 }
 
                 await NvidiaSmi.NvidiaSmiCommandAsync($"-pl {PowerLimitValue.Value} --id={g.UUID}");
-                GPUCorePLValue.Text = $"GPU限制:        {PowerLimitValue.Value}W";
+                GPUCorePLValue.Text = $"GPU 功率限制: {PowerLimitValue.Value}W";
             }
             else
             {
@@ -128,12 +131,12 @@ namespace VRCGPUTool.Form
                     if (ResetGPUDefaultPL.Checked)
                     {
                         await NvidiaSmi.NvidiaSmiCommandAsync($"-pl {g.PLimitDefault} --id={g.UUID}");
-                        GPUCorePLValue.Text = $"GPU限制:        {g.PLimitDefault}W";
+                        GPUCorePLValue.Text = $"GPU 功率限制: {g.PLimitDefault}W";
                     }
                     else
                     {
                         await NvidiaSmi.NvidiaSmiCommandAsync($"-pl {SpecificPLValue.Value} --id={g.UUID}");
-                        GPUCorePLValue.Text = $"GPU限制:        {SpecificPLValue.Value}W";
+                        GPUCorePLValue.Text = $"GPU 功率限制: {SpecificPLValue.Value}W";
                     }
                 }
             }
@@ -143,7 +146,7 @@ namespace VRCGPUTool.Form
         {
             if (datetime_now.Hour == EndTime.Value.Hour && datetime_now.Minute == EndTime.Value.Minute)
             {
-                var res = MessageBox.Show("由於限制結束時間與目前時間相同，無法開始限制\n是否要透過強制變更結束時間來開始限制？", "資訊", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                var res = MessageBox.Show("限制結束時間與目前時間相同，無法啟用限制。\n是否要強制變更結束時間並啟用限制？", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
                 if (res == DialogResult.OK)
                 {
                     ignoreTimeCheck = true;
@@ -161,7 +164,7 @@ namespace VRCGPUTool.Form
         {
             if (datetime_now.Hour == BeginTime.Value.Hour && datetime_now.Minute == BeginTime.Value.Minute)
             {
-                var res = MessageBox.Show("由於限制的開始時間與目前時間相同，無法解除限制。\n是否要透過強制變更開始時間來解除限制？", "資訊", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                var res = MessageBox.Show("限制的開始時間與目前時間相同，無法停用限制。\n是否要強制變更開始時間並停用限制？", "提示", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
                 if (res == DialogResult.OK)
                 {
                     ignoreTimeCheck = true;
@@ -179,7 +182,12 @@ namespace VRCGPUTool.Form
         {
             GpuStatus g = gpuStatuses[GpuIndex.SelectedIndex];
             PowerLimitValue.Value = Convert.ToDecimal(g.PLimit);
-            GPUCorePLValue.Text = "GPU限制:        " + g.PLimit + "W";
+            GPUCorePLValue.Text = "GPU 功率限制: " + g.PLimit + "W";
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            gpuPlog.SavePowerLog();
         }
 
         private async void GPUreadTimer_Tick(object sender, EventArgs e)
@@ -308,7 +316,7 @@ namespace VRCGPUTool.Form
             ConfigFile config = new(this);
             await config.SaveConfigAsync();
 
-            await powerLogFile.SavePowerLogAsync();
+            gpuPlog.SavePowerLog();
 
             notifyIcon.Dispose();
         }
@@ -360,12 +368,6 @@ namespace VRCGPUTool.Form
         {
             ConfigFile config = new(this);
             await config.LoadConfigAsync();
-        }
-
-        private async void LoadPowerLog()
-        {
-            powerLogFile = new PowerLogFile(gpuPlog);
-            await powerLogFile.LoadPowerLogAsync(DateTime.Now, false);
         }
 
         private void SettingButton_Click(object sender, EventArgs _)

@@ -1,54 +1,75 @@
 using System;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
-using VRCGPUTool.Form;
-using VRCGPUTool.Util;
 
 namespace VRCGPUTool
 {
+    public class PowerLogData
+    {
+        public int[] HourPowerLog { get; set; } = new int[24];
+        public DateTime LogDate { get; set; } = DateTime.Now.Date;
+    }
+
     public class GPUPowerLog
     {
+        internal PowerLogData powerLogData;
+        private readonly string logDirectory = @"D:\Program Files (x86)\TEMP\powerlog";
+        private static readonly JsonSerializerOptions jsonOptions = new() { WriteIndented = false };
+
         public GPUPowerLog()
         {
-            rawdata = new RawData();
-        }
-
-        internal RawData rawdata;
-
-        internal class RawData
-        {
-            public int[] HourPowerLog { get; set; } = new int[24];
-            public DateTime Logdate { get; set; } = DateTime.Now;
-        }
-
-        internal void ClearPowerLog()
-        {
-            foreach(int i in rawdata.HourPowerLog)
+            if (!Directory.Exists(logDirectory))
             {
-                rawdata.HourPowerLog[i] = 0;
+                Directory.CreateDirectory(logDirectory);
             }
+            LoadPowerLog(DateTime.Now);
+        }
+
+        private string GetLogFilePath(DateTime date)
+        {
+            return Path.Combine(logDirectory, $"powerlog_{date:yyyyMMdd}.json");
+        }
+
+        internal void LoadPowerLog(DateTime date)
+        {
+            string filePath = GetLogFilePath(date);
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                powerLogData = JsonSerializer.Deserialize<PowerLogData>(json);
+            }
+            else
+            {
+                powerLogData = new PowerLogData
+                {
+                    LogDate = date.Date
+                };
+            }
+        }
+
+        internal void SavePowerLog()
+        {
+            string filePath = GetLogFilePath(powerLogData.LogDate);
+            string json = JsonSerializer.Serialize(powerLogData, jsonOptions);
+            File.WriteAllText(filePath, json);
         }
 
         internal async Task PowerLoggingAsync(DateTime now, GpuStatus g)
         {
-            if (now.Hour != rawdata.Logdate.Hour)
+            if (now.Date != powerLogData.LogDate)
             {
-                rawdata.Logdate = now;
-                for (int i = 0; i < 24; i++)
+                SavePowerLog();
+                powerLogData = new PowerLogData
                 {
-                    rawdata.HourPowerLog[i] = 0;
-                }
+                    LogDate = now.Date
+                };
             }
 
-            rawdata.HourPowerLog[now.Hour] += g.PowerDraw;
+            powerLogData.HourPowerLog[now.Hour] += g.PowerDraw;
 
-            // 移除即時儲存至硬碟的邏輯，改為在程式關閉時統一儲存
-            // 數據將在運行時保存於記憶體中
             await Task.CompletedTask;
-        }
-
-        private void AddPowerDeltaData(int hour,int value)
-        {
-            rawdata.HourPowerLog[hour] += value;
         }
     }
 }
+

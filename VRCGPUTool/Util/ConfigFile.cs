@@ -15,7 +15,7 @@ namespace VRCGPUTool.Util
         public MainForm MainObj { get; } = main_Obj;
         private const string ConfigFileName = "config.json";
 
-        private static readonly JsonSerializerOptions s_jsonOptions = new() { WriteIndented = true };
+        private static readonly JsonSerializerOptions s_jsonOptions = new() { WriteIndented = false };
 
         private class Config
         {

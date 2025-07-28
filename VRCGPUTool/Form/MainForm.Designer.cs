@@ -161,7 +161,7 @@ namespace VRCGPUTool.Form
             this.GPUCoreTemp.Name = "GPUCoreTemp";
             this.GPUCoreTemp.Size = new System.Drawing.Size(300, 35);
             this.GPUCoreTemp.TabIndex = 4;
-            this.GPUCoreTemp.Text = "GPUコア温度: 0℃";
+            this.GPUCoreTemp.Text = "GPU 核心溫度: 0℃";
             // 
             // GPUTotalPower
             // 
@@ -170,7 +170,7 @@ namespace VRCGPUTool.Form
             this.GPUTotalPower.Name = "GPUTotalPower";
             this.GPUTotalPower.Size = new System.Drawing.Size(300, 35);
             this.GPUTotalPower.TabIndex = 3;
-            this.GPUTotalPower.Text = "GPU全体電力: 0W";
+            this.GPUTotalPower.Text = "GPU 總功耗: 0W";
             // 
             // GPUCorePLValue
             // 
@@ -179,7 +179,7 @@ namespace VRCGPUTool.Form
             this.GPUCorePLValue.Name = "GPUCorePLValue";
             this.GPUCorePLValue.Size = new System.Drawing.Size(300, 35);
             this.GPUCorePLValue.TabIndex = 2;
-            this.GPUCorePLValue.Text = "GPUコア電力制限: 0W";
+            this.GPUCorePLValue.Text = "GPU 核心功率限制: 0W";
             // 
             // GPUCoreClockValue
             // 
@@ -188,7 +188,7 @@ namespace VRCGPUTool.Form
             this.GPUCoreClockValue.Name = "GPUCoreClockValue";
             this.GPUCoreClockValue.Size = new System.Drawing.Size(300, 35);
             this.GPUCoreClockValue.TabIndex = 1;
-            this.GPUCoreClockValue.Text = "GPUコアクロック: 0MHz";
+            this.GPUCoreClockValue.Text = "GPU 核心時脈: 0MHz";
             // 
             // GPUMemoryClockValue
             // 
@@ -197,7 +197,7 @@ namespace VRCGPUTool.Form
             this.GPUMemoryClockValue.Name = "GPUMemoryClockValue";
             this.GPUMemoryClockValue.Size = new System.Drawing.Size(350, 35);
             this.GPUMemoryClockValue.TabIndex = 0;
-            this.GPUMemoryClockValue.Text = "GPUメモリクロック: 0MHz";
+            this.GPUMemoryClockValue.Text = "GPU 記憶體時脈: 0MHz";
             // 
             // GPUStatusGroup
             // 
@@ -220,7 +220,7 @@ namespace VRCGPUTool.Form
             this.PLimitLabel.Name = "PLimitLabel";
             this.PLimitLabel.Size = new System.Drawing.Size(172, 30);
             this.PLimitLabel.TabIndex = 0;
-            this.PLimitLabel.Text = "限制瓦數";
+            this.PLimitLabel.Text = "設定功率限制值";
             // 
             // PowerLimitValue
             // 
@@ -253,7 +253,7 @@ namespace VRCGPUTool.Form
             this.LoadMinimumLimit.Name = "LoadMinimumLimit";
             this.LoadMinimumLimit.Size = new System.Drawing.Size(70, 25);
             this.LoadMinimumLimit.TabIndex = 7;
-            this.LoadMinimumLimit.Text = "最小値";
+            this.LoadMinimumLimit.Text = "最小值";
             this.LoadMinimumLimit.Click += new System.EventHandler(this.LoadMinimumLimit_Click);
             // 
             // LoadDefaultLimit
@@ -262,7 +262,7 @@ namespace VRCGPUTool.Form
             this.LoadDefaultLimit.Name = "LoadDefaultLimit";
             this.LoadDefaultLimit.Size = new System.Drawing.Size(70, 25);
             this.LoadDefaultLimit.TabIndex = 8;
-            this.LoadDefaultLimit.Text = "默認";
+            this.LoadDefaultLimit.Text = "預設值";
             this.LoadDefaultLimit.Click += new System.EventHandler(this.LoadDefaultLimit_Click);
             // 
             // LoadMaximumLimit
@@ -271,7 +271,7 @@ namespace VRCGPUTool.Form
             this.LoadMaximumLimit.Name = "LoadMaximumLimit";
             this.LoadMaximumLimit.Size = new System.Drawing.Size(70, 25);
             this.LoadMaximumLimit.TabIndex = 9;
-            this.LoadMaximumLimit.Text = "最大値";
+            this.LoadMaximumLimit.Text = "最大值";
             this.LoadMaximumLimit.Click += new System.EventHandler(this.LoadMaximumLimit_Click);
             // 
             // ResetBehavior
@@ -280,7 +280,7 @@ namespace VRCGPUTool.Form
             this.ResetBehavior.Name = "ResetBehavior";
             this.ResetBehavior.Size = new System.Drawing.Size(49, 17);
             this.ResetBehavior.TabIndex = 14;
-            this.ResetBehavior.Text = "解除時";
+            this.ResetBehavior.Text = "停用限制後的功率";
             // 
             // ResetGPUDefaultPL
             // 
@@ -290,7 +290,7 @@ namespace VRCGPUTool.Form
             this.ResetGPUDefaultPL.Size = new System.Drawing.Size(140, 20);
             this.ResetGPUDefaultPL.TabIndex = 11;
             this.ResetGPUDefaultPL.TabStop = true;
-            this.ResetGPUDefaultPL.Text = "恢復 GPU 默認值";
+            this.ResetGPUDefaultPL.Text = "恢復為 GPU 預設值";
             // 
             // SetGPUPLSpecific
             // 
@@ -298,7 +298,7 @@ namespace VRCGPUTool.Form
             this.SetGPUPLSpecific.Name = "SetGPUPLSpecific";
             this.SetGPUPLSpecific.Size = new System.Drawing.Size(140, 20);
             this.SetGPUPLSpecific.TabIndex = 10;
-            this.SetGPUPLSpecific.Text = "設置為指定值";
+            this.SetGPUPLSpecific.Text = "設定為指定值";
             this.SetGPUPLSpecific.CheckedChanged += new System.EventHandler(this.SetGPUPLSpecific_CheckedChanged);
             // 
             // SpecificPLValue
@@ -350,7 +350,7 @@ namespace VRCGPUTool.Form
             this.PLimitGroup.Size = new System.Drawing.Size(317, 299);
             this.PLimitGroup.TabIndex = 7;
             this.PLimitGroup.TabStop = false;
-            this.PLimitGroup.Text = "核心功耗限制";
+            this.PLimitGroup.Text = "功率限制設定";
             // 
             // button200
             // 
@@ -389,7 +389,7 @@ namespace VRCGPUTool.Form
             this.LimitStatusText.Name = "LimitStatusText";
             this.LimitStatusText.Size = new System.Drawing.Size(127, 41);
             this.LimitStatusText.TabIndex = 19;
-            this.LimitStatusText.Text = "限制中";
+            this.LimitStatusText.Text = "功率限制已啟用";
             this.LimitStatusText.Visible = false;
             // 
             // ForceUnlimit
@@ -399,7 +399,7 @@ namespace VRCGPUTool.Form
             this.ForceUnlimit.Name = "ForceUnlimit";
             this.ForceUnlimit.Size = new System.Drawing.Size(200, 65);
             this.ForceUnlimit.TabIndex = 18;
-            this.ForceUnlimit.Text = "解除限制";
+            this.ForceUnlimit.Text = "強制停用";
             this.ForceUnlimit.Click += new System.EventHandler(this.ForceUnlimit_Click);
             // 
             // ForceLimit
@@ -409,7 +409,7 @@ namespace VRCGPUTool.Form
             this.ForceLimit.Name = "ForceLimit";
             this.ForceLimit.Size = new System.Drawing.Size(200, 65);
             this.ForceLimit.TabIndex = 17;
-            this.ForceLimit.Text = "開始限制";
+            this.ForceLimit.Text = "強制啟用";
             this.ForceLimit.Click += new System.EventHandler(this.ForceLimit_Click);
             // 
             // AutoDetect
@@ -419,7 +419,7 @@ namespace VRCGPUTool.Form
             this.AutoDetect.Name = "AutoDetect";
             this.AutoDetect.Size = new System.Drawing.Size(75, 20);
             this.AutoDetect.TabIndex = 13;
-            this.AutoDetect.Text = "自動偵測";
+            this.AutoDetect.Text = "自動偵測 VRChat 狀態並切換功率限制";
             // 
             // ThresholdLabel
             // 
@@ -428,7 +428,7 @@ namespace VRCGPUTool.Form
             this.ThresholdLabel.Name = "ThresholdLabel";
             this.ThresholdLabel.Size = new System.Drawing.Size(43, 19);
             this.ThresholdLabel.TabIndex = 17;
-            this.ThresholdLabel.Text = "臨界點";
+            this.ThresholdLabel.Text = "當 GPU 使用率為";
             // 
             // GPUusageThreshold
             // 
@@ -451,7 +451,7 @@ namespace VRCGPUTool.Form
             this.PercentLabel.Name = "PercentLabel";
             this.PercentLabel.Size = new System.Drawing.Size(20, 15);
             this.PercentLabel.TabIndex = 18;
-            this.PercentLabel.Text = "%";
+            this.PercentLabel.Text = "% 時啟用限制";
             //this.PercentLabel.Click += new System.EventHandler(this.PercentLabel_Click);
             // 
             // CoreLimitEnable
@@ -461,7 +461,7 @@ namespace VRCGPUTool.Form
             this.CoreLimitEnable.Name = "CoreLimitEnable";
             this.CoreLimitEnable.Size = new System.Drawing.Size(100, 20);
             this.CoreLimitEnable.TabIndex = 15;
-            this.CoreLimitEnable.Text = "核心頻率限制";
+            this.CoreLimitEnable.Text = "限制核心時脈";
             // 
             // CoreClockSetting
             // 
@@ -511,7 +511,7 @@ namespace VRCGPUTool.Form
             this.BetaGroup.Size = new System.Drawing.Size(216, 82);
             this.BetaGroup.TabIndex = 8;
             this.BetaGroup.TabStop = false;
-            this.BetaGroup.Text = "額外功能";
+            this.BetaGroup.Text = "Beta 功能";
             // 
             // limitime
             // 
@@ -520,7 +520,7 @@ namespace VRCGPUTool.Form
             this.limitime.Name = "limitime";
             this.limitime.Size = new System.Drawing.Size(91, 20);
             this.limitime.TabIndex = 19;
-            this.limitime.Text = "Time limit";
+            this.limitime.Text = "依時段限制功率";
             this.limitime.CheckedChanged += new System.EventHandler(this.Limitime_CheckedChanged);
             // 
             // GpuIndex
@@ -560,21 +560,21 @@ namespace VRCGPUTool.Form
             // 
             this.MainWindowOpenStrip.Name = "MainWindowOpenStrip";
             this.MainWindowOpenStrip.Size = new System.Drawing.Size(170, 22);
-            this.MainWindowOpenStrip.Text = "メインウィンドウ";
+            this.MainWindowOpenStrip.Text = "開啟主視窗";
             this.MainWindowOpenStrip.Click += new System.EventHandler(this.MainWindowOpenStrip_Click);
             // 
             // ShowVersionInfoStrip
             // 
             this.ShowVersionInfoStrip.Name = "ShowVersionInfoStrip";
             this.ShowVersionInfoStrip.Size = new System.Drawing.Size(170, 22);
-            this.ShowVersionInfoStrip.Text = "バージョン情報";
+            this.ShowVersionInfoStrip.Text = "版本資訊";
             this.ShowVersionInfoStrip.Click += new System.EventHandler(this.ShowVersionInfoStrip_Click);
             // 
             // ApplicationExitStrip
             // 
             this.ApplicationExitStrip.Name = "ApplicationExitStrip";
             this.ApplicationExitStrip.Size = new System.Drawing.Size(170, 22);
-            this.ApplicationExitStrip.Text = "終了";
+            this.ApplicationExitStrip.Text = "結束應用程式";
             this.ApplicationExitStrip.Click += new System.EventHandler(this.ApplicationExitStrip_Click);
             // 
             // MainForm

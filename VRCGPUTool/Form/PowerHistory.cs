@@ -2,6 +2,8 @@ using System;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using VRCGPUTool.Util;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace VRCGPUTool.Form
 {
@@ -30,7 +32,7 @@ namespace VRCGPUTool.Form
         readonly PowerProfile powerPofile;
         UnitPriceSetting pricesetting;
 
-        double[] hourOfPrice = new double[24];
+        readonly double[] hourOfPrice = new double[24];
 
         private DateTime dispDataDay;
         private DateTime dispDataMonth;
@@ -46,17 +48,16 @@ namespace VRCGPUTool.Form
             DateTime dt = DateTime.Now;
             DataRefreshDate.Text = dt.ToString();
 
-            string datelabel = string.Format("{0:D4}年{1}月{2}日の電力使用履歴", dispDataDay.Year, dispDataDay.Month, dispDataDay.Day);
+            string datelabel = string.Format("{0:D4}年{1}月{2}日用電記錄", dispDataDay.Year, dispDataDay.Month, dispDataDay.Day);
 
             LogDateLabel.Text = datelabel;
 
             UsageGraphDay.Series.Clear();
             UsageGraphDay.ChartAreas.Clear();
             UsageGraphDay.Titles.Clear();
+            _ = new Series("chartArea");
 
-            Series seriesLine = new Series("chartArea");
-
-            Series seriesColumn = new Series
+            Series seriesColumn = new()
             {
                 ChartType = SeriesChartType.Column,
                 IsVisibleInLegend = false
@@ -67,20 +68,20 @@ namespace VRCGPUTool.Form
 
             for (int i = 0; i < 24; i++)
             {
-                seriesColumn.Points.Add(new DataPoint(i, (double)dispdata.rawdata.HourPowerLog[i] / 3600.0));
-                usageTotalDay += dispdata.rawdata.HourPowerLog[i];
-                priceOfDay += hourOfPrice[i] * dispdata.rawdata.HourPowerLog[i];
+                seriesColumn.Points.Add(new DataPoint(i, (double)dispdata.powerLogData.HourPowerLog[i] / 3600.0));
+                usageTotalDay += dispdata.powerLogData.HourPowerLog[i];
+                priceOfDay += hourOfPrice[i] * dispdata.powerLogData.HourPowerLog[i];
             }
 
             usageTotalDay /= (3600.0 * 1000.0); //Kwh
             priceOfDay /= (3600.0 * 1000.0);
 
-            priceDay.Text = string.Format("電気代:{0:f1}円", priceOfDay);
-            DaylyTotalPower.Text = string.Format("合計: {0:f2}kWh", usageTotalDay);
+            priceDay.Text = string.Format("電費:{0:f1}元", priceOfDay);
+            DaylyTotalPower.Text = string.Format("總計: {0:f2}kWh", usageTotalDay);
 
-            ChartArea area = new ChartArea("area");
+            ChartArea area = new("area");
             area.AxisX.Title = "時間(h)";
-            area.AxisY.Title = "電力量(Wh)";
+            area.AxisY.Title = "用電量(Wh)";
             area.AxisX.LabelStyle.Interval = 1;
             area.AxisX.IsMarginVisible = true;
 
@@ -88,9 +89,11 @@ namespace VRCGPUTool.Form
             UsageGraphDay.Series.Add(seriesColumn);
             UsageGraphDay.ChartAreas["area"].AxisX.Minimum = 0;
             UsageGraphDay.ChartAreas["area"].AxisX.Maximum = 23;
+
+            NextDayData.Enabled = (dispDataDay.Date < DateTime.Now.Date);
         }
 
-        private async void PreviousDayData_Click(object sender, EventArgs e)
+        private void PreviousDayData_Click(object sender, EventArgs e)
         {
             dispDataDay = dispDataDay.AddDays(-1);
 
@@ -100,22 +103,15 @@ namespace VRCGPUTool.Form
             }
             else
             {
-                GPUPowerLog plog = new GPUPowerLog();
-                PowerLogFile plogfile = new PowerLogFile(plog);
-                await plogfile.LoadPowerLogAsync(dispDataDay, true);
+                GPUPowerLog plog = new();
+                plog.LoadPowerLog(dispDataDay);
                 DrawHistoryDay(plog);
             }
         }
 
-        private async void NextDayData_Click(object sender, EventArgs e)
+        private void NextDayData_Click(object sender, EventArgs e)
         {
             dispDataDay = dispDataDay.AddDays(1);
-
-            if (DateTime.Now.Date > PlogData.rawdata.Logdate.Date)
-            {
-                MessageBox.Show("日付が変わりました。表示内容を更新するにはこのウィンドウを開きなおしてください", "情報");
-                return;
-            }
 
             if (DateTime.Now.Date == dispDataDay.Date)
             {
@@ -123,9 +119,8 @@ namespace VRCGPUTool.Form
             }
             else
             {
-                GPUPowerLog plog = new GPUPowerLog();
-                PowerLogFile plogfile = new PowerLogFile(plog);
-                await plogfile.LoadPowerLogAsync(dispDataDay, true);
+                GPUPowerLog plog = new();
+                plog.LoadPowerLog(dispDataDay);
                 DrawHistoryDay(plog);
             }
         }
@@ -146,18 +141,17 @@ namespace VRCGPUTool.Form
             UsageGraphMonth.Series.Clear();
             UsageGraphMonth.ChartAreas.Clear();
             UsageGraphMonth.Titles.Clear();
+            _ = new Series("chartArea");
 
-            Series seriesLine = new Series("chartArea");
-
-            Series seriesColumn = new Series
+            Series seriesColumn = new()
             {
                 ChartType = SeriesChartType.Column,
                 IsVisibleInLegend = false
             };
 
-            ChartArea area = new ChartArea("area");
+            ChartArea area = new("area");
             area.AxisX.Title = "日(Day)";
-            area.AxisY.Title = "電力量(Wh)";
+            area.AxisY.Title = "用電量(Wh)";
             area.AxisX.LabelStyle.Interval = 1;
             area.AxisX.IsMarginVisible = true;
 
@@ -175,49 +169,60 @@ namespace VRCGPUTool.Form
             }
         }
 
-        private async System.Threading.Tasks.Task DataPointAddThisMonth(Series seriesColumn)
+        private async Task DataPointAddThisMonth(Series seriesColumn)
         {
-            string datelabel = string.Format("{0:D4}年{1}月の電力使用履歴", PlogData.rawdata.Logdate.Year, PlogData.rawdata.Logdate.Month);
+            string datelabel = string.Format("{0:D4}年{1}月用電記錄", PlogData.powerLogData.LogDate.Year, PlogData.powerLogData.LogDate.Month);
             LogMonthLabel.Text = datelabel;
 
-            int dayUsage = 0;
-            double usageTotalMonth = 0.0;
-            double priceOfMonth = 0.0;
-
-            for (int i = 0; i < 24; i++)
+            var result = await Task.Run(() =>
             {
-                dayUsage += PlogData.rawdata.HourPowerLog[i];
-                priceOfMonth += hourOfPrice[i] * PlogData.rawdata.HourPowerLog[i];
-            }
-            seriesColumn.Points.Add(new DataPoint(PlogData.rawdata.Logdate.Day, dayUsage / 3600.0));
-            usageTotalMonth += dayUsage;
+                double totalUsage = 0;
+                double totalPrice = 0;
+                var points = new List<DataPoint>();
 
-            int Days = DateTime.DaysInMonth(PlogData.rawdata.Logdate.Year, PlogData.rawdata.Logdate.Month);
-            UsageGraphMonth.ChartAreas["area"].AxisX.Maximum = Days;
-
-            for (int i = 1; i < PlogData.rawdata.Logdate.Day; i++)
-            {
-                DateTime loadDate = new DateTime(PlogData.rawdata.Logdate.Year, PlogData.rawdata.Logdate.Month, i);
-                GPUPowerLog recentlog = new GPUPowerLog();
-                PowerLogFile logfile = new PowerLogFile(recentlog);
-                int res = await logfile.LoadPowerLogAsync(loadDate, true);
-
-                if (res == 0)
+                // Calculate for previous days in the month
+                for (int i = 1; i < PlogData.powerLogData.LogDate.Day; i++)
                 {
-                    int recentDayUsage = 0;
+                    DateTime loadDate = new(PlogData.powerLogData.LogDate.Year, PlogData.powerLogData.LogDate.Month, i);
+                    GPUPowerLog recentlog = new();
+                    recentlog.LoadPowerLog(loadDate);
+
+                    int dayUsage = 0;
                     for (int j = 0; j < 24; j++)
                     {
-                        recentDayUsage += recentlog.rawdata.HourPowerLog[j];
-                        priceOfMonth += hourOfPrice[j] * recentlog.rawdata.HourPowerLog[j];
+                        dayUsage += recentlog.powerLogData.HourPowerLog[j];
+                        totalPrice += hourOfPrice[j] * recentlog.powerLogData.HourPowerLog[j];
                     }
-                    seriesColumn.Points.Add(new DataPoint(i, recentDayUsage / 3600.0));
-                    usageTotalMonth += recentDayUsage;
+                    points.Add(new DataPoint(i, dayUsage / 3600.0));
+                    totalUsage += dayUsage;
                 }
+
+                // Calculate for the current day
+                int currentDayUsage = 0;
+                for (int i = 0; i < 24; i++)
+                {
+                    currentDayUsage += PlogData.powerLogData.HourPowerLog[i];
+                    totalPrice += hourOfPrice[i] * PlogData.powerLogData.HourPowerLog[i];
+                }
+                points.Add(new DataPoint(PlogData.powerLogData.LogDate.Day, currentDayUsage / 3600.0));
+                totalUsage += currentDayUsage;
+
+                return new { Points = points, TotalUsage = totalUsage, TotalPrice = totalPrice };
+            });
+
+            foreach (var point in result.Points)
+            {
+                seriesColumn.Points.Add(point);
             }
-            usageTotalMonth /= (3600.0 * 1000.0);
-            priceOfMonth /= (3600.0 * 1000.0);
-            priceMonth.Text = string.Format("電気代:{0:f1}円", priceOfMonth);
-            MonthlyTotalPower.Text = string.Format("合計: {0:f2}kWh", usageTotalMonth);
+
+            int daysInMonth = DateTime.DaysInMonth(PlogData.powerLogData.LogDate.Year, PlogData.powerLogData.LogDate.Month);
+            UsageGraphMonth.ChartAreas["area"].AxisX.Maximum = daysInMonth;
+
+            double usageTotalMonthKwh = result.TotalUsage / (3600.0 * 1000.0);
+            double priceOfMonth = result.TotalPrice / (3600.0 * 1000.0);
+
+            priceMonth.Text = string.Format("電費:{0:f1}元", priceOfMonth);
+            MonthlyTotalPower.Text = string.Format("總計: {0:f2}kWh", usageTotalMonthKwh);
         }
 
         private async System.Threading.Tasks.Task DataPointAddPreviousMonth(DateTime dt, Series seriesColumn)
@@ -233,27 +238,24 @@ namespace VRCGPUTool.Form
 
             for (int i = 1; i <= Days; i++)
             {
-                DateTime loadDate = new DateTime(dt.Year, dt.Month, i);
-                GPUPowerLog recentlog = new GPUPowerLog();
-                PowerLogFile logfile = new PowerLogFile(recentlog);
-                int res = await logfile.LoadPowerLogAsync(loadDate, true);
+                DateTime loadDate = new(dt.Year, dt.Month, i);
+                GPUPowerLog recentlog = new();
+                recentlog.LoadPowerLog(loadDate);
 
-                if (res == 0)
+                int dayUsage = 0;
+                for (int j = 0; j < 24; j++)
                 {
-                    int dayUsage = 0;
-                    for (int j = 0; j < 24; j++)
-                    {
-                        dayUsage += recentlog.rawdata.HourPowerLog[j];
-                        priceOfMonth += hourOfPrice[j] * recentlog.rawdata.HourPowerLog[j];
-                    }
-                    seriesColumn.Points.Add(new DataPoint(i, dayUsage / 3600.0));
-                    usageTotalMonth += dayUsage;
+                    dayUsage += recentlog.powerLogData.HourPowerLog[j];
+                    priceOfMonth += hourOfPrice[j] * recentlog.powerLogData.HourPowerLog[j];
                 }
+                seriesColumn.Points.Add(new DataPoint(i, dayUsage / 3600.0));
+                usageTotalMonth += dayUsage;
             }
             usageTotalMonth /= (3600.0 * 1000.0);
             priceOfMonth /= (3600.0 * 1000.0);
-            priceMonth.Text = string.Format("電気代:{0:f1}円", priceOfMonth);
+            priceMonth.Text = string.Format("電費:{0:f1}元", priceOfMonth);
             MonthlyTotalPower.Text = string.Format("合計: {0:f2}kWh", usageTotalMonth);
+            await Task.CompletedTask;
         }
 
         private async void PreviousMonthData_Click(object sender, EventArgs e)
@@ -315,7 +317,7 @@ namespace VRCGPUTool.Form
 
         private async void SaveAction(object sender, EventArgs e)
         {
-            PowerLogCsv logcsv = new PowerLogCsv(MainObj, this);
+            PowerLogCsv logcsv = new(MainObj, this);
             if (TabRange.SelectedIndex == 0)
             {
                 if (DateTime.Now.Date == dispDataDay.Date)
@@ -324,22 +326,15 @@ namespace VRCGPUTool.Form
                 }
                 else
                 {
-                    GPUPowerLog plog = new GPUPowerLog();
-                    PowerLogFile plogfile = new PowerLogFile(plog);
-                    int res = await plogfile.LoadPowerLogAsync(dispDataDay, true);
+                    GPUPowerLog plog = new();
+                    plog.LoadPowerLog(dispDataDay);
                     logcsv.ExportCsvDay(plog);
                 }
             }
             else
             {
-                if (DateTime.Now.Year == dispDataMonth.Year && DateTime.Now.Month == dispDataMonth.Month)
-                {
-                    await logcsv.ExportCsvMonth(dispDataMonth, true);
-                }
-                else
-                {
-                    await logcsv.ExportCsvMonth(dispDataMonth, false);
-                }
+                bool isThisMonth = (dispDataMonth.Year == DateTime.Now.Year && dispDataMonth.Month == DateTime.Now.Month);
+                await logcsv.ExportCsvMonth(dispDataMonth, isThisMonth);
             }
         }
     }

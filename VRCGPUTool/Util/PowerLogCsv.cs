@@ -19,14 +19,14 @@ namespace VRCGPUTool.Util
                 string fName = historyForm.saveFileDialog1.FileName;
                 using FileStream fs = new(fName, FileMode.Create);
                 using StreamWriter sw = new(fs, System.Text.Encoding.Unicode);
-                DateTime dt = gPLog.rawdata.Logdate;
+                DateTime dt = gPLog.powerLogData.LogDate;
 
                 sw.WriteLine($"{dt.Year}年{dt.Month}月{dt.Day}日");
                 sw.WriteLine($"時,使用量(Wh)");
 
                 for (int i = 0; i < 24; i++)
                 {
-                    sw.WriteLine($"{i},{(gPLog.rawdata.HourPowerLog[i] / 3600.0):f2}");
+                    sw.WriteLine($"{i},{(gPLog.powerLogData.HourPowerLog[i] / 3600.0):f2}");
                 }
             }
         }
@@ -44,31 +44,20 @@ namespace VRCGPUTool.Util
 
                 if (isThisMonth)
                 {
-                    for (int i = 1; i < fm.gpuPlog.rawdata.Logdate.Day; i++)
+                    for (int i = 1; i < fm.gpuPlog.powerLogData.LogDate.Day; i++)
                     {
-                        DateTime loadDate = new(fm.gpuPlog.rawdata.Logdate.Year, fm.gpuPlog.rawdata.Logdate.Month, i);
+                        DateTime loadDate = new(fm.gpuPlog.powerLogData.LogDate.Year, fm.gpuPlog.powerLogData.LogDate.Month, i);
                         GPUPowerLog recentlog = new();
-                        PowerLogFile logfile = new(recentlog);
-                        int res2 = await logfile.LoadPowerLogAsync(loadDate, true);
+                        recentlog.LoadPowerLog(loadDate);
 
-                        if (res2 == 0)
+                        for (int j = 0; j < 24; j++)
                         {
-                            for (int j = 0; j < 24; j++)
-                            {
-                                sw.WriteLine($"{i},{j},{(recentlog.rawdata.HourPowerLog[j] / 3600.0)}");
-                            }
-                        }
-                        else
-                        {
-                            for (int j = 0; j < 24; j++)
-                            {
-                                sw.WriteLine($"{i},{j},0");
-                            }
+                            sw.WriteLine($"{i},{j},{(recentlog.powerLogData.HourPowerLog[j] / 3600.0):f2}");
                         }
                     }
                     for (int i = 0; i < 24; i++)
                     {
-                        sw.WriteLine($"{fm.gpuPlog.rawdata.Logdate.Day},{i},{(fm.gpuPlog.rawdata.HourPowerLog[i] / 3600.0)}");
+                        sw.WriteLine($"{fm.gpuPlog.powerLogData.LogDate.Day},{i},{(fm.gpuPlog.powerLogData.HourPowerLog[i] / 3600.0):f2}");
                     }
                 }
                 else
@@ -79,25 +68,15 @@ namespace VRCGPUTool.Util
                     {
                         DateTime loadDate = new(dt.Year, dt.Month, i);
                         GPUPowerLog recentlog = new();
-                        PowerLogFile logfile = new(recentlog);
-                        int res2 = await logfile.LoadPowerLogAsync(loadDate, true);
+                        recentlog.LoadPowerLog(loadDate);
 
-                        if (res2 == 0)
+                        for (int j = 0; j < 24; j++)
                         {
-                            for (int j = 0; j < 24; j++)
-                            {
-                                sw.WriteLine($"{i},{j},{(recentlog.rawdata.HourPowerLog[j] / 3600.0)}");
-                            }
-                        }
-                        else
-                        {
-                            for (int j = 0; j < 24; j++)
-                            {
-                                sw.WriteLine($"{i},{j},0");
-                            }
+                            sw.WriteLine($"{i},{j},{(recentlog.powerLogData.HourPowerLog[j] / 3600.0):f2}");
                         }
                     }
                 }
+                await Task.CompletedTask;
             }
         }
     }
