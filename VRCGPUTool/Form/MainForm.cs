@@ -62,7 +62,7 @@ namespace VRCGPUTool.Form
                 GpuStatus firstGpu = gpuStatuses.First();
                 SpecificPLValue.Value = Convert.ToDecimal(firstGpu.PLimit);
                 PowerLimitValue.Value = Convert.ToDecimal(firstGpu.PLimitMin);
-                GPUCorePLValue.Text = $"GPU 功率限制: {firstGpu.PLimit}W";
+                GPUCorePLValue.Text = $"GPU限制:        {firstGpu.PLimit}W";
             }
 
             GPUreadTimer.Interval = 1000; // 1 second
@@ -100,7 +100,7 @@ namespace VRCGPUTool.Form
                 }
 
                 await NvidiaSmi.NvidiaSmiCommandAsync($"-pl {PowerLimitValue.Value} --id={g.UUID}");
-                GPUCorePLValue.Text = $"GPU 功率限制: {PowerLimitValue.Value}W";
+                GPUCorePLValue.Text = $"GPU限制:        {PowerLimitValue.Value}W";
             }
             else
             {
@@ -131,12 +131,12 @@ namespace VRCGPUTool.Form
                     if (ResetGPUDefaultPL.Checked)
                     {
                         await NvidiaSmi.NvidiaSmiCommandAsync($"-pl {g.PLimitDefault} --id={g.UUID}");
-                        GPUCorePLValue.Text = $"GPU 功率限制: {g.PLimitDefault}W";
+                        GPUCorePLValue.Text = $"GPU限制:        {g.PLimitDefault}W";
                     }
                     else
                     {
                         await NvidiaSmi.NvidiaSmiCommandAsync($"-pl {SpecificPLValue.Value} --id={g.UUID}");
-                        GPUCorePLValue.Text = $"GPU 功率限制: {SpecificPLValue.Value}W";
+                        GPUCorePLValue.Text = $"GPU限制:        {SpecificPLValue.Value}W";
                     }
                 }
             }

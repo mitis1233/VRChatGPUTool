@@ -4,6 +4,8 @@ using System.Windows.Forms.DataVisualization.Charting;
 using VRCGPUTool.Util;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Data.SQLite;
+using System.Linq;
 
 namespace VRCGPUTool.Form
 {
@@ -68,9 +70,9 @@ namespace VRCGPUTool.Form
 
             for (int i = 0; i < 24; i++)
             {
-                seriesColumn.Points.Add(new DataPoint(i, (double)dispdata.powerLogData.HourPowerLog[i] / 3600.0));
-                usageTotalDay += dispdata.powerLogData.HourPowerLog[i];
-                priceOfDay += hourOfPrice[i] * dispdata.powerLogData.HourPowerLog[i];
+                seriesColumn.Points.Add(new DataPoint(i, (double)dispdata.currentDayPowerLog[i] / 3600.0));
+                usageTotalDay += dispdata.currentDayPowerLog[i];
+                priceOfDay += hourOfPrice[i] * dispdata.currentDayPowerLog[i];
             }
 
             usageTotalDay /= (3600.0 * 1000.0); //Kwh
@@ -133,128 +135,75 @@ namespace VRCGPUTool.Form
             }
         }
 
-        private async System.Threading.Tasks.Task DrawHistoryMonth(DateTime dispdt, bool isThisMonth)
+        private async Task DrawHistoryMonth(DateTime dt, bool isThisMonth)
         {
-            DateTime dt = DateTime.Now;
-            DataRefreshDate2.Text = dt.ToString();
+            DateTime now = DateTime.Now;
+            DataRefreshDate2.Text = now.ToString();
 
             UsageGraphMonth.Series.Clear();
             UsageGraphMonth.ChartAreas.Clear();
             UsageGraphMonth.Titles.Clear();
-            _ = new Series("chartArea");
 
-            Series seriesColumn = new()
+            string datelabel = string.Format("{0:D4}年{1}月用電記錄", dt.Year, dt.Month);
+            LogMonthLabel.Text = datelabel;
+
+            Series seriesColumn = new Series()
             {
                 ChartType = SeriesChartType.Column,
                 IsVisibleInLegend = false
             };
 
-            ChartArea area = new("area");
-            area.AxisX.Title = "日(Day)";
-            area.AxisY.Title = "用電量(Wh)";
-            area.AxisX.LabelStyle.Interval = 1;
-            area.AxisX.IsMarginVisible = true;
-
-            UsageGraphMonth.ChartAreas.Add(area);
-            UsageGraphMonth.Series.Add(seriesColumn);
-            UsageGraphMonth.ChartAreas["area"].AxisX.Minimum = 1;
-
-            if (isThisMonth)
-            {
-                await DataPointAddThisMonth(seriesColumn);
-            }
-            else
-            {
-                await DataPointAddPreviousMonth(dispdt, seriesColumn);
-            }
-        }
-
-        private async Task DataPointAddThisMonth(Series seriesColumn)
-        {
-            string datelabel = string.Format("{0:D4}年{1}月用電記錄", PlogData.powerLogData.LogDate.Year, PlogData.powerLogData.LogDate.Month);
-            LogMonthLabel.Text = datelabel;
-
-            var result = await Task.Run(() =>
-            {
-                double totalUsage = 0;
-                double totalPrice = 0;
-                var points = new List<DataPoint>();
-
-                // Calculate for previous days in the month
-                for (int i = 1; i < PlogData.powerLogData.LogDate.Day; i++)
-                {
-                    DateTime loadDate = new(PlogData.powerLogData.LogDate.Year, PlogData.powerLogData.LogDate.Month, i);
-                    GPUPowerLog recentlog = new();
-                    recentlog.LoadPowerLog(loadDate);
-
-                    int dayUsage = 0;
-                    for (int j = 0; j < 24; j++)
-                    {
-                        dayUsage += recentlog.powerLogData.HourPowerLog[j];
-                        totalPrice += hourOfPrice[j] * recentlog.powerLogData.HourPowerLog[j];
-                    }
-                    points.Add(new DataPoint(i, dayUsage / 3600.0));
-                    totalUsage += dayUsage;
-                }
-
-                // Calculate for the current day
-                int currentDayUsage = 0;
-                for (int i = 0; i < 24; i++)
-                {
-                    currentDayUsage += PlogData.powerLogData.HourPowerLog[i];
-                    totalPrice += hourOfPrice[i] * PlogData.powerLogData.HourPowerLog[i];
-                }
-                points.Add(new DataPoint(PlogData.powerLogData.LogDate.Day, currentDayUsage / 3600.0));
-                totalUsage += currentDayUsage;
-
-                return new { Points = points, TotalUsage = totalUsage, TotalPrice = totalPrice };
-            });
-
-            foreach (var point in result.Points)
-            {
-                seriesColumn.Points.Add(point);
-            }
-
-            int daysInMonth = DateTime.DaysInMonth(PlogData.powerLogData.LogDate.Year, PlogData.powerLogData.LogDate.Month);
-            UsageGraphMonth.ChartAreas["area"].AxisX.Maximum = daysInMonth;
-
-            double usageTotalMonthKwh = result.TotalUsage / (3600.0 * 1000.0);
-            double priceOfMonth = result.TotalPrice / (3600.0 * 1000.0);
-
-            priceMonth.Text = string.Format("電費:{0:f1}元", priceOfMonth);
-            MonthlyTotalPower.Text = string.Format("總計: {0:f2}kWh", usageTotalMonthKwh);
-        }
-
-        private async System.Threading.Tasks.Task DataPointAddPreviousMonth(DateTime dt, Series seriesColumn)
-        {
-            string datelabel = string.Format("{0:D4}年{1}月の電力使用履歴", dt.Year, dt.Month);
-            LogMonthLabel.Text = datelabel;
-
             double usageTotalMonth = 0.0;
             double priceOfMonth = 0.0;
 
-            int Days = DateTime.DaysInMonth(dt.Year, dt.Month);
-            UsageGraphMonth.ChartAreas["area"].AxisX.Maximum = Days;
+            Dictionary<int, int> monthlyData = new Dictionary<int, int>();
 
-            for (int i = 1; i <= Days; i++)
+            using (var connection = new SQLiteConnection($"Data Source={PlogData.GetDbPath()};Version=3;"))
             {
-                DateTime loadDate = new(dt.Year, dt.Month, i);
-                GPUPowerLog recentlog = new();
-                recentlog.LoadPowerLog(loadDate);
-
-                int dayUsage = 0;
-                for (int j = 0; j < 24; j++)
+                connection.Open();
+                string sql = "SELECT SUBSTR(LogDate, 9, 2) as Day, SUM(PowerDraw) as TotalPower FROM PowerLogs WHERE SUBSTR(LogDate, 1, 7) = @month GROUP BY Day";
+                using (var command = new SQLiteCommand(sql, connection))
                 {
-                    dayUsage += recentlog.powerLogData.HourPowerLog[j];
-                    priceOfMonth += hourOfPrice[j] * recentlog.powerLogData.HourPowerLog[j];
+                    command.Parameters.AddWithValue("@month", dt.ToString("yyyy-MM"));
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int day = Convert.ToInt32(reader["Day"]);
+                            int totalPower = Convert.ToInt32(reader["TotalPower"]);
+                            monthlyData[day] = totalPower;
+                            usageTotalMonth += totalPower;
+                        }
+                    }
                 }
-                seriesColumn.Points.Add(new DataPoint(i, dayUsage / 3600.0));
-                usageTotalMonth += dayUsage;
             }
-            usageTotalMonth /= (3600.0 * 1000.0);
-            priceOfMonth /= (3600.0 * 1000.0);
+
+            int daysInMonth = DateTime.DaysInMonth(dt.Year, dt.Month);
+            for (int i = 1; i <= daysInMonth; i++)
+            {
+                int power = monthlyData.ContainsKey(i) ? monthlyData[i] : 0;
+                seriesColumn.Points.Add(new DataPoint(i, (double)power / 3600.0));
+                // Assuming average price for month calculation for simplicity
+                priceOfMonth += (power / 3600.0 / 1000.0) * hourOfPrice.Average(); 
+            }
+
+            usageTotalMonth /= (3600.0 * 1000.0); //Kwh
+
             priceMonth.Text = string.Format("電費:{0:f1}元", priceOfMonth);
-            MonthlyTotalPower.Text = string.Format("合計: {0:f2}kWh", usageTotalMonth);
+            MonthlyTotalPower.Text = string.Format("總計: {0:f2}kWh", usageTotalMonth);
+
+            ChartArea area = new ChartArea("area");
+            area.AxisX.Title = "日期(d)";
+            area.AxisY.Title = "用電量(Wh)";
+            area.AxisX.LabelStyle.Interval = 1;
+            area.AxisX.IsMarginVisible = true;
+            area.AxisX.Minimum = 1;
+            area.AxisX.Maximum = daysInMonth;
+
+            UsageGraphMonth.ChartAreas.Add(area);
+            UsageGraphMonth.Series.Add(seriesColumn);
+
+            NextMonthData.Enabled = (dispDataMonth.Year < DateTime.Now.Year || (dispDataMonth.Year == DateTime.Now.Year && dispDataMonth.Month < DateTime.Now.Month));
             await Task.CompletedTask;
         }
 
@@ -334,7 +283,7 @@ namespace VRCGPUTool.Form
             else
             {
                 bool isThisMonth = (dispDataMonth.Year == DateTime.Now.Year && dispDataMonth.Month == DateTime.Now.Month);
-                await logcsv.ExportCsvMonth(dispDataMonth, isThisMonth);
+                await logcsv.ExportCsvMonth(dispDataMonth);
             }
         }
     }
