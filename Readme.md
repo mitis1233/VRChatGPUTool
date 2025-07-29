@@ -10,13 +10,13 @@ UI介面大改版: 新增功率按鈕, Time limit時間控制限制功率功能�
 
 修正用電量紀錄方式, 只在關閉前&0:00時候寫入硬碟, 降低硬碟損耗
 
-改用SQLite紀錄歷史用電量
+改用SQLite紀錄歷史用電量, 優化大數據的存儲及讀取方式
 
 # VRChat向け GPU電力制限ツール
 
 VRC向け GPU電力制限ツール
 
-![image](https://raw.githubusercontent.com/mitis1233/VRChatGPUTool/master/png/main.png)
+![image](https://raw.githubusercontent.com/mitis1233/VRChatGPUTool/refs/heads/master/png/main.png)
 
 ## 最新リリース(Ver 2.2.1)
 
